@@ -206,8 +206,8 @@
                     <td>{{.NamaPemohon}}</td>
                     <td>{{.JenisPermohonan}}</td>
                     <td>{{.PPAT}}</td>
-                    <td>{{.CreatedAt}}</td>
-                    <td>{{.CreatedBy}}</td>
+                    <td>{{.CreatedByNama}}</td>
+                    <td>{{.CreatedByNama}}</td>
                     <td>
                         {{if .UpdatedAt}}
                         {{.UpdatedAt}}
@@ -216,8 +216,8 @@
                         {{end}}
                     </td>
                     <td>
-                        {{if .UpdatedBy}}
-                        {{.UpdatedBy}}
+                        {{if .UpdatedByNama}}
+                        {{.UpdatedByNama}}
                         {{else}}
                         -
                         {{end}}

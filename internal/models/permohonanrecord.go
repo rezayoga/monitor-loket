@@ -13,4 +13,6 @@ type PermohonanRecord struct {
 	CreatedBy       string `json:"created_by"`
 	UpdatedAt       string `json:"updated_at"`
 	UpdatedBy       string `json:"updated_by"`
+	CreatedByNama   string `json:"created_by_nama"`
+	UpdatedByNama   string `json:"updated_by_nama"`
 }

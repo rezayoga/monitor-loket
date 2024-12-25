@@ -1973,9 +1973,9 @@ func (app *application) generateExcel(records []models.PermohonanRecord) (*excel
 		f.SetCellValue(sheetName, excelColumnName(6)+row, record.JenisPermohonan)
 		f.SetCellValue(sheetName, excelColumnName(7)+row, record.PPAT)
 		f.SetCellValue(sheetName, excelColumnName(8)+row, record.CreatedAt)
-		f.SetCellValue(sheetName, excelColumnName(9)+row, record.CreatedBy)
+		f.SetCellValue(sheetName, excelColumnName(9)+row, record.CreatedByNama)
 		f.SetCellValue(sheetName, excelColumnName(10)+row, record.UpdatedAt)
-		f.SetCellValue(sheetName, excelColumnName(11)+row, record.UpdatedBy)
+		f.SetCellValue(sheetName, excelColumnName(11)+row, record.UpdatedByNama)
 	}
 
 	// Atur kolom agar auto-fit

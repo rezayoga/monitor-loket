@@ -1592,29 +1592,31 @@ func (m *PostgresDBRepo) GetFilteredPermohonanRecords(filter string, limit int) 
 
 	// Daftar kolom yang dapat di-filter
 	filterColumns := `
-		COALESCE(nama_kuasa, '') ILIKE '%' || $1 || '%'
-		OR COALESCE(nomor_berkas, '') ILIKE '%' || $1 || '%'
-		OR COALESCE(phone, '') ILIKE '%' || $1 || '%'
-		OR COALESCE(nama_pemohon, '') ILIKE '%' || $1 || '%'
-		OR COALESCE(jenis_permohonan, '') ILIKE '%' || $1 || '%'
-		OR COALESCE(ppat, '') ILIKE '%' || $1 || '%'
-		OR COALESCE(created_by, '') ILIKE '%' || $1 || '%'
+		COALESCE(p.nama_kuasa, '') ILIKE '%' || $1 || '%'
+		OR COALESCE(p.nomor_berkas, '') ILIKE '%' || $1 || '%'
+		OR COALESCE(p.phone, '') ILIKE '%' || $1 || '%'
+		OR COALESCE(p.nama_pemohon, '') ILIKE '%' || $1 || '%'
+		OR COALESCE(p.jenis_permohonan, '') ILIKE '%' || $1 || '%'
+		OR COALESCE(p.ppat, '') ILIKE '%' || $1 || '%'
+		OR COALESCE(p.created_by, '') ILIKE '%' || $1 || '%'
 	`
 
 	// Query dengan COALESCE
 	selectColumns := `
-		id, 
-		COALESCE(dikuasakan, false) AS dikuasakan,
-		COALESCE(nama_kuasa, '') AS nama_kuasa,
-		COALESCE(nomor_berkas, '') AS nomor_berkas,
-		COALESCE(phone, '') AS phone,
-		COALESCE(nama_pemohon, '') AS nama_pemohon,
-		COALESCE(jenis_permohonan, '') AS jenis_permohonan,
-		COALESCE(ppat, '') AS ppat,
-		COALESCE((created_at AT TIME ZONE 'Asia/Jakarta')::TEXT, '') AS created_at,
-		COALESCE(created_by, '') AS created_by,
-		COALESCE((updated_at AT TIME ZONE 'Asia/Jakarta')::TEXT, '') AS updated_at,
-		COALESCE(updated_by, '') AS updated_by
+		p.id, 
+		COALESCE(p.dikuasakan, false) AS dikuasakan,
+		COALESCE(p.nama_kuasa, '') AS nama_kuasa,
+		COALESCE(p.nomor_berkas, '') AS nomor_berkas,
+		COALESCE(p.phone, '') AS phone,
+		COALESCE(p.nama_pemohon, '') AS nama_pemohon,
+		COALESCE(p.jenis_permohonan, '') AS jenis_permohonan,
+		COALESCE(p.ppat, '') AS ppat,
+		COALESCE((p.created_at AT TIME ZONE 'Asia/Jakarta')::TEXT, '') AS created_at,
+		COALESCE(p.created_by, '') AS created_by,
+		COALESCE((p.updated_at AT TIME ZONE 'Asia/Jakarta')::TEXT, '') AS updated_at,
+		COALESCE(p.updated_by, '') AS updated_by,
+		COALESCE(u1.nama, '') AS created_by_nama,
+		COALESCE(u2.nama, '') AS updated_by_nama
 	`
 
 	if filter != "" {
@@ -1622,14 +1624,18 @@ func (m *PostgresDBRepo) GetFilteredPermohonanRecords(filter string, limit int) 
 			query = `
 				SELECT 
 					` + selectColumns + `
-				FROM app.permohonan
+				FROM app.permohonan p
+				LEFT JOIN public.users u1 ON p.created_by::uuid = u1.id::uuid
+				LEFT JOIN public.users u2 ON p.updated_by::uuid = u2.id::uuid
 				WHERE ` + filterColumns
 			rows, err = m.DB.QueryContext(context.Background(), query, filter)
 		} else {
 			query = `
 				SELECT 
 					` + selectColumns + `
-				FROM app.permohonan
+				FROM app.permohonan p
+				LEFT JOIN public.users u1 ON p.created_by::uuid = u1.id::uuid
+				LEFT JOIN public.users u2 ON p.updated_by::uuid = u2.id::uuid
 				WHERE ` + filterColumns + `
 				LIMIT $2
 			`
@@ -1640,14 +1646,18 @@ func (m *PostgresDBRepo) GetFilteredPermohonanRecords(filter string, limit int) 
 			query = `
 				SELECT 
 					` + selectColumns + `
-				FROM app.permohonan
+				FROM app.permohonan p
+				LEFT JOIN public.users u1 ON p.created_by::uuid = u1.id::uuid
+				LEFT JOIN public.users u2 ON p.updated_by::uuid = u2.id::uuid
 			`
 			rows, err = m.DB.QueryContext(context.Background(), query)
 		} else {
 			query = `
 				SELECT 
 					` + selectColumns + `
-				FROM app.permohonan
+				FROM app.permohonan p
+				LEFT JOIN public.users u1 ON p.created_by::uuid = u1.id::uuid
+				LEFT JOIN public.users u2 ON p.updated_by::uuid = u2.id::uuid
 				LIMIT $1
 			`
 			rows, err = m.DB.QueryContext(context.Background(), query, limit)
@@ -1666,7 +1676,8 @@ func (m *PostgresDBRepo) GetFilteredPermohonanRecords(filter string, limit int) 
 		err := rows.Scan(
 			&record.ID, &record.Dikuasakan, &record.NamaKuasa, &record.NomorBerkas, &record.Phone,
 			&record.NamaPemohon, &record.JenisPermohonan, &record.PPAT, &record.CreatedAt,
-			&record.CreatedBy, &record.UpdatedAt, &record.UpdatedBy,
+			&record.CreatedBy, &record.UpdatedAt, &record.UpdatedBy, &record.CreatedByNama,
+			&record.UpdatedByNama,
 		)
 		if err != nil {
 			return nil, err
