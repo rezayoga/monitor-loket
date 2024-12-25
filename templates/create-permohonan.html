@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2, user-scalable=no"/>
+    <meta name="description" content="{{.Data.KeyApplicationName}}"/>
+    <meta name="keywords" content="{{.Data.KeyApplicationName}}, {{.Data.KeyApplicationOwner}}"/>
+    <meta name="author" content="{{.Data.KeyApplicationAuthor}}"/>
+
+    <link rel="icon" type="image/png" href="/images/favicon-96x96.png" sizes="96x96"/>
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg"/>
+    <link rel="shortcut icon" href="/images/favicon.ico"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png"/>
+    <link rel="manifest" href="/images/site.webmanifest"/>
+    <title>Tambah Arsip | {{.Data.KeyApplicationName}}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
+          type="text/css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+    <style>
+        body {
+            -webkit-font-smoothing: antialiased;
+            background-color: #f9f9f9;
+            font-family: 'Quicksand', Arial, sans-serif;
+        }
+
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 250px;
+            background-color: #ffffff;
+            padding: 20px;
+            margin-top: 40px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #content {
+            margin-left: 250px;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        .ui.menu.fixed {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-footer {
+            text-align: center;
+            margin-top: auto;
+            padding-top: 20px;
+            padding-bottom: 40px;
+            border-top: 1px solid #ddd;
+        }
+
+        .sidebar-footer .app-identity {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .ui.file.input input[type="file"] {
+            display: none;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui-calendar/dist/calendar.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui-calendar/dist/calendar.min.js"></script>
+</head>
+
+<body>
+<div class="ui top fixed menu">
+    <a class="header item" href="https://app.siapsidilan.id/login">{{.Data.KeyApplicationName}}</a>
+    <div class="right menu">
+        <div class="ui dropdown item">
+            Login: {{.Data.KeySessionAdminEmail}}
+            <i class="dropdown icon"></i>
+            <div class="menu">
+                <a class="item" href="/profile">Profile</a>
+                <a class="item" href="/riwayat-aktivitas">Riwayat Aktivitas</a>
+                <div class="divider"></div>
+                <a class="item" href="/auth/logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="sidebar" class="ui vertical menu">
+    {{if not (eq .Data.KeySessionAdminRole "Admin")}}
+    <a class="item" href="/dashboard">
+        <i class="dashboard icon"></i>
+        Dashboard
+    </a>
+    <a class="item active" href="/permohonan">
+        <i class="address card icon"></i>
+        Daftar Permohonan
+    </a>
+    {{end}}
+    {{if not (eq .Data.KeySessionAdminRole "Petugas Loket")}}
+    <a class="item" href="/user">
+        <i class="users card icon"></i>
+        Daftar Petugas
+    </a>
+    {{end}}
+    {{if and (not (eq .Data.KeySessionAdminRole "Admin")) (not (eq .Data.KeySessionAdminRole "Petugas Loket"))}}
+    <a class="item" href="/monitoring-dan-pelaporan">
+        <i class="file alternate icon"></i>
+        Monitoring dan Pelaporan
+    </a>
+    {{end}}
+
+    <div class="sidebar-footer">
+        <div class="app-identity">
+            {{.Data.KeyApplicationOwner}}
+            <br/>
+            {{.Data.KeyApplicationName}} Versi {{.Data.KeyApplicationVersion}}
+        </div>
+    </div>
+</div>
+
+<div id="content">
+
+    <div class="ui breadcrumb">
+        <a class="section" href="/dashboard">
+            <i class="arrow left icon"></i> Dashboard
+        </a>
+        <div class="divider"> /</div>
+        <a class="section" href="/permohonan">Permohonan</a>
+        <div class="divider"> /</div>
+        <div class="active section">Tambah Permohonan</div>
+    </div>
+
+    <div class="ui padded segment">
+        <h2 class="ui header">Tambah Permohonan</h2>
+
+        <form class="ui form" method="POST" action="/permohonan/create">
+            {{ .Data.csrfField }}
+            <div class="two fields">
+                <div class="field">
+                    <div class="ui checkbox">
+                        <input type="checkbox" id="dikuasakan" name="dikuasakan">
+                        <label>Dikuasakan</label>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Nama Kuasa</label>
+                    <input type="text" id="nama_kuasa" name="nama_kuasa" placeholder="Masukkan nama kuasa" disabled>
+                </div>
+            </div>
+
+            <div class="two fields">
+                <div class="field">
+                    <label>Nama Pemohon</label>
+                    <input type="text" name="nama_pemohon" placeholder="Masukkan nama pemohon" required>
+                </div>
+                <div class="field">
+                    <label>Nomor Berkas</label>
+                    <input type="text" name="nomor_berkas" placeholder="Masukkan nomor berkas" required>
+                </div>
+            </div>
+
+            <div class="two fields">
+                <div class="field">
+                    <label>Jenis Permohonan</label>
+                    <input type="text" name="jenis_permohonan" placeholder="Masukkan jenis permohonan" required>
+                </div>
+                <div class="field">
+                    <label>PPAT</label>
+                    <input type="text" name="ppat" placeholder="Masukkan PPAT">
+                </div>
+            </div>
+
+            <div class="two fields">
+                <div class="field">
+                    <label>Telepon</label>
+                    <input type="text" name="phone" placeholder="Masukkan nomor telepon">
+                </div>
+            </div>
+
+            <div class="ui divider"></div>
+            <button class="ui primary small labeled icon button" type="submit">
+                <i class="save icon"></i> Simpan Permohonan
+            </button>
+            <a class="ui small labeled icon button" href="/permohonan">
+                <i class="arrow left icon"></i> Kembali
+            </a>
+        </form>
+
+        <script>
+            $(document).ready(function () {
+                $('#dikuasakan').on('change', function () {
+                    const isChecked = $(this).is(':checked');
+                    $('#nama_kuasa').prop('disabled', !isChecked);
+                });
+            });
+        </script>
+
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.ui.dropdown').dropdown();
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.ui.calendar').calendar({
+            type: 'date',
+            formatter: {
+                date: function (date) {
+                    if (!date) return '';
+                    const day = ('0' + date.getDate()).slice(-2);
+                    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+                    const year = date.getFullYear();
+                    return `${day}-${month}-${year}`; // Format DD-MM-YYYY
+                }
+            }
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#arsipForm').on('submit', function (e) {
+            // Disable tombol submit
+            const submitButton = $('#submitButton');
+            submitButton.prop('disabled', true); // Disable tombol
+            submitButton.addClass('loading'); // Tambahkan kelas loading
+            submitButton.find('i').removeClass('save icon').addClass('spinner loading icon'); // Ganti ikon save dengan spinner
+        });
+    });
+</script>
+</body>
+</html>

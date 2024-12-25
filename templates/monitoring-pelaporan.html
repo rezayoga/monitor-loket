@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2, user-scalable=no"/>
+    <meta name="description" content="{{.Data.KeyApplicationName}}"/>
+    <meta name="keywords" content="{{.Data.KeyApplicationName}}, {{.Data.KeyApplicationOwner}}"/>
+    <meta name="author" content="{{.Data.KeyApplicationAuthor}}"/>
+    <meta name="csrf-token" content="{{.Data.csrfToken}}">
+    <link rel="icon" type="image/png" href="/images/favicon-96x96.png" sizes="96x96"/>
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg"/>
+    <link rel="shortcut icon" href="/images/favicon.ico"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png"/>
+    <link rel="manifest" href="/images/site.webmanifest"/>
+    <title>{{.Data.KeyApplicationName}} - Monitoring dan Pelaporan</title>
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
+            type="text/css"
+    />
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+    <style type="text/css">
+        body {
+            -webkit-font-smoothing: antialiased;
+            background-color: #f9f9f9;
+            font-family: 'Quicksand', Arial, sans-serif;
+        }
+
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 250px;
+            background-color: #ffffff;
+            padding: 20px;
+            margin-top: 40px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #content {
+            margin-left: 250px;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        .ui.menu.fixed {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-footer {
+            text-align: center;
+            margin-top: auto;
+            padding-top: 20px;
+            padding-bottom: 40px;
+            border-top: 1px solid #ddd;
+        }
+
+        .sidebar-footer .app-identity {
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* Styling tambahan */
+        .ui.form .fields {
+            margin-bottom: 1rem;
+        }
+
+        .highlight-row {
+            background-color: #ffffcc !important;
+        }
+
+        .table-container {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+</head>
+
+<body>
+<div class="ui top fixed menu">
+    <a class="header item" href="https://app.siapsidilan.id/login">{{.Data.KeyApplicationName}}</a>
+    <div class="right menu">
+        <div class="ui dropdown item">
+            Login: {{.Data.KeySessionAdminEmail}}
+            <i class="dropdown icon"></i>
+            <div class="menu">
+                <a class="item" href="/profile">Profile</a>
+                <a class="item" href="/riwayat-aktivitas">Riwayat Aktivitas</a>
+                <div class="divider"></div>
+                <a class="item" href="/auth/logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="sidebar" class="ui vertical menu">
+    {{if not (eq .Data.KeySessionAdminRole "Admin")}}
+    <a class="item" href="/dashboard">
+        <i class="dashboard icon"></i>
+        Dashboard
+    </a>
+    <a class="item" href="/permohonan">
+        <i class="address card icon"></i>
+        Daftar Permohonan
+    </a>
+    {{end}}
+    {{if not (eq .Data.KeySessionAdminRole "Petugas Loket")}}
+    <a class="item" href="/user">
+        <i class="users card icon"></i>
+        Daftar Petugas
+    </a>
+    {{end}}
+    {{if and (not (eq .Data.KeySessionAdminRole "Admin")) (not (eq .Data.KeySessionAdminRole "Petugas Loket"))}}
+    <a class="item active" href="/monitoring-dan-pelaporan">
+        <i class="file alternate icon"></i>
+        Monitoring dan Pelaporan
+    </a>
+    {{end}}
+    <div class="sidebar-footer">
+        <div class="app-identity">
+            {{.Data.KeyApplicationOwner}}
+            <br/>
+            {{.Data.KeyApplicationName}} Versi {{.Data.KeyApplicationVersion}}
+        </div>
+    </div>
+</div>
+
+<div id="content">
+    <div class="ui breadcrumb">
+        <a class="section" href="/dashboard">
+            <i class="arrow left icon"></i> Dashboard
+        </a>
+        <div class="divider"> /</div>
+        <div class="active section">Monitoring dan Pelaporan</div>
+    </div>
+    <div class="ui padded segment">
+        <h2 class="ui huge dividing header">Monitoring dan Pelaporan Permohonan</h2>
+        <form class="ui form" method="GET" action="/monitoring-dan-pelaporan">
+            <div class="ui action input fluid">
+                <!-- Input Filter -->
+                <input
+                        type="text"
+                        name="filter"
+                        placeholder="Masukkan kata kunci..."
+                        value="{{.Data.Filter}}"
+                />
+
+                <!-- Dropdown Limit -->
+                <select class="ui compact selection dropdown" name="limit" style="min-width: 120px;">
+                    <option value="10" {{if eq .Data.Limit
+                    "10"}}selected{{end}}>10</option>
+                    <option value="25" {{if eq .Data.Limit
+                    "25"}}selected{{end}}>25</option>
+                    <option value="50" {{if eq .Data.Limit
+                    "50"}}selected{{end}}>50</option>
+                    <option value="1000" {{if eq .Data.Limit
+                    "1000"}}selected{{end}}>1000</option>
+                </select>
+
+                <!-- Tombol Cari -->
+                <button type="submit" class="ui blue labeled icon button">
+                    <i class="search icon"></i> Cari
+                </button>
+            </div>
+        </form>
+
+        <!-- Tabel Data -->
+        <div class="ui basic segment table-container">
+            <table class="ui celled compact striped teal table">
+                <thead>
+                <tr>
+                    <th class="center aligned">Dikuasakan</th>
+                    <th class="center aligned">Nama Kuasa</th>
+                    <th class="center aligned">Nomor Berkas</th>
+                    <th class="center aligned">Telepon</th>
+                    <th class="center aligned">Nama Pemohon</th>
+                    <th class="center aligned">Jenis Permohonan</th>
+                    <th class="center aligned">PPAT</th>
+                    <th class="center aligned">Dibuat Tanggal</th>
+                    <th class="center aligned">Dibuat Oleh</th>
+                    <th class="center aligned">Diperbarui Tanggal</th>
+                    <th class="center aligned">Diperbarui Oleh</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{range .Data.KeyListPermohonan}}
+                <tr>
+                    <td class="center aligned">
+                        {{if .Dikuasakan}}
+                        <span class="ui green circular label">Ya</span>
+                        {{else}}
+                        <span class="ui red circular label">Tidak</span>
+                        {{end}}
+                    </td>
+                    <td>{{.NamaKuasa}}</td>
+                    <td>{{.NomorBerkas}}</td>
+                    <td>{{.Phone}}</td>
+                    <td>{{.NamaPemohon}}</td>
+                    <td>{{.JenisPermohonan}}</td>
+                    <td>{{.PPAT}}</td>
+                    <td>{{.CreatedAt}}</td>
+                    <td>{{.CreatedBy}}</td>
+                    <td>
+                        {{if .UpdatedAt}}
+                        {{.UpdatedAt}}
+                        {{else}}
+                        -
+                        {{end}}
+                    </td>
+                    <td>
+                        {{if .UpdatedBy}}
+                        {{.UpdatedBy}}
+                        {{else}}
+                        -
+                        {{end}}
+                    </td>
+                </tr>
+                {{else}}
+                <tr>
+                    <td colspan="11" class="center aligned">Tidak ada data permohonan ditemukan.</td>
+                </tr>
+                {{end}}
+                </tbody>
+            </table>
+        </div>
+
+
+        <form method="GET" action="/monitoring-dan-pelaporan/unduh" class="ui form">
+            <!-- Input tersembunyi untuk filter -->
+            <input type="hidden" name="filter" value="{{.Data.Filter}}">
+            <input type="hidden" name="limit" value="{{.Data.Limit}}">
+            <!-- Wrapper Flexbox untuk Rata Kanan -->
+            <div style="display: flex; justify-content: flex-end;">
+                <div class="ui action input">
+                    <select class="ui compact selection dropdown" name="format">
+                        <!--                        <option value="pdf">Unduh sebagai PDF</option>-->
+                        <option value="excel">Unduh format Excel</option>
+                    </select>
+                    <button type="submit" class="ui blue labeled icon button">
+                        <i class="download icon"></i> Unduh Laporan Arsip
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.ui.dropdown').dropdown();
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        let inactivityTime = 0;
+        const maxInactivityTime = 30 * 60 * 1000; // 30 menit dalam milidetik
+        const updateInterval = 1 * 60 * 1000; // Interval minimal untuk ping ke server (1 menit)
+        let lastUpdateTime = 0; // Timestamp terakhir kali aktivitas diperbarui
+
+        // Ambil token CSRF dari meta tag
+        const csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+        // Fungsi untuk mengatur ulang waktu ketidakaktifan
+        const resetInactivity = () => {
+            inactivityTime = 0;
+
+            const currentTime = new Date().getTime();
+            if (currentTime - lastUpdateTime >= updateInterval) {
+                lastUpdateTime = currentTime;
+
+                // Kirim ping ke server untuk memperbarui aktivitas
+                $.ajax({
+                    url: '/update-last-activity',
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-Token': csrfToken // Sisipkan token CSRF ke header
+                    },
+                    error: function (error) {
+                        console.error('Failed to update activity:', error);
+                    }
+                });
+            }
+        };
+
+        // Fungsi untuk logout
+        const logout = () => {
+            window.location.href = '/auth/logout';
+        };
+
+        // Event Listener untuk aktivitas pengguna
+        const events = 'mousemove keydown mousedown scroll touchstart';
+        $(window).on(events, resetInactivity);
+
+        // Timer untuk mendeteksi ketidakaktifan
+        setInterval(() => {
+            inactivityTime += 1000;
+            if (inactivityTime >= maxInactivityTime) {
+                logout();
+            }
+        }, 1000);
+    });
+</script>
+</body>
+</html>

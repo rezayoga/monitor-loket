@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+
+<html lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2, user-scalable=no"/>
+    <meta name="description" content="{{.Data.KeyApplicationName}}"/>
+    <meta name="keywords" content="{{.Data.KeyApplicationName}}, {{.Data.KeyApplicationOwner}}"/>
+    <meta name="author" content="{{.Data.KeyApplicationAuthor}}"/>
+    <meta name="csrf-token" content="{{.Data.csrfToken}}">
+    <link rel="icon" type="image/png" href="/images/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
+    <link rel="shortcut icon" href="/images/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
+    <link rel="manifest" href="/images/site.webmanifest" />
+    <title>{{.Data.KeyApplicationName}}</title>
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
+        type="text/css"
+    />
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style type="text/css">
+        body {
+            -webkit-font-smoothing: antialiased;
+            background-color: #f9f9f9;
+            font-family: 'Quicksand', Arial, sans-serif;
+        }
+
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 250px;
+            background-color: #ffffff;
+            padding: 20px;
+            margin-top: 40px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #content {
+            margin-left: 250px;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        .ui.menu.fixed {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Styling for logo and version text */
+        .sidebar-footer {
+            text-align: center;
+            margin-top: auto;
+            padding-top: 20px;
+            padding-bottom: 40px;
+            border-top: 1px solid #ddd;
+        }
+
+        .sidebar-footer .app-identity {
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+    <style>
+        .highlight-diff {
+            background-color: #ffe8e8; /* Warna latar merah muda untuk perbedaan */
+        }
+
+        .ui.table.compact td {
+            padding: 4px !important; /* Tabel kompak untuk atribut */
+        }
+
+        .ui.table.compact th {
+            text-align: left;
+            background-color: #f9f9f9;
+        }
+    </style>
+    <style>
+        /* Membatasi tinggi canvas agar lebih pendek */
+        #inventoryProgressChart,
+        #inventoryPieChart,
+        #progressTrendsChart {
+            max-height: 200px; /* Batasi tinggi maksimal */
+            height: 200px; /* Atur tinggi tetap */
+        }
+
+        .card .content {
+            padding: 10px; /* Kurangi padding di dalam panel */
+        }
+
+        .card .extra.content {
+            font-size: 12px; /* Perkecil teks ekstra di bawah */
+        }
+    </style>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui-calendar/dist/calendar.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui-calendar/dist/calendar.min.css">
+</head>
+
+<body>
+<div class="ui top fixed menu">
+     <a class="header item" href="https://app.siapsidilan.id/login">{{.Data.KeyApplicationName}}</a>
+    <div class="right menu">
+        <div class="ui dropdown item">
+            Login: {{.Data.KeySessionAdminEmail}}
+            <i class="dropdown icon"></i>
+            <div class="menu">
+                <a class="item" href="/profile">Profile</a>
+                <a class="item" href="/riwayat-aktivitas">Riwayat Aktivitas</a>
+                <div class="divider"></div>
+                <a class="item" href="/auth/logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="sidebar" class="ui vertical menu">
+    {{if not (eq .Data.KeySessionAdminRole "Admin")}}
+    <a class="item active" href="/dashboard">
+        <i class="dashboard icon"></i>
+        Dashboard
+    </a>
+    <a class="item" href="/permohonan">
+        <i class="address card icon"></i>
+        Daftar Permohonan
+    </a>
+    {{end}}
+    {{if not (eq .Data.KeySessionAdminRole "Petugas Loket")}}
+    <a class="item" href="/user">
+        <i class="users card icon"></i>
+        Daftar Petugas
+    </a>
+    {{end}}
+    {{if and (not (eq .Data.KeySessionAdminRole "Admin")) (not (eq .Data.KeySessionAdminRole "Petugas Loket"))}}
+    <a class="item" href="/monitoring-dan-pelaporan">
+        <i class="file alternate icon"></i>
+        Monitoring dan Pelaporan
+    </a>
+    {{end}}
+
+    <!-- Logo and Version Section at the Bottom of Sidebar -->
+    <div class="sidebar-footer">
+        <div class="app-identity">
+            {{.Data.KeyApplicationOwner}}
+            <br/>
+            {{.Data.KeyApplicationName}} Versi {{.Data.KeyApplicationVersion}}
+        </div>
+    </div>
+</div>
+
+<div id="content">
+    <div class="ui breadcrumb">
+        <div class="active section">
+            <i class="arrow left icon"></i> Dashboard
+        </div>
+    </div>
+    <div class="ui padded segment">
+    <h2 class="ui huge dividing header">Dashboard</h2>
+
+    <div class="ui four stackable cards">
+        <div class="card">
+            <div class="content">
+                <div class="ui dividing header">Sedang Online</div>
+                <ul id="onlineUsersList">
+                    <!-- Data akan dimuat secara dinamis -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Panel 1: Total Aktivitas -->
+        <div class="card">
+            <div class="content">
+                <div class="ui dividing header">Total Aktivitas</div>
+                <ul>
+                    {{range $action, $count := .Data.totalActivities}}
+                    <li><strong>{{$action}}:</strong> {{$count}} aktivitas</li>
+                    {{end}}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Panel 2: Aktivitas Terbaru -->
+        <div class="card">
+            <div class="content">
+                <div class="ui dividing header">Aktivitas Terbaru</div>
+                <ul>
+                    {{range .Data.recentActivities}}
+                    <li>
+                        <strong>{{.action}}:</strong> {{.description}}
+                        <br><small>{{.created_at | formatTime | convertTimestamp}}</small>
+                    </li>
+                    {{end}}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Panel 4: Daftar Aktivitas dengan Filter -->
+        <div class="card">
+            <div class="content">
+                <form class="ui form" method="GET" action="/dashboard">
+                    <div class="two fields">
+                        <div class="field">
+                            <label>Tanggal Awal</label>
+                            <input type="date" name="start_date" value="{{.Data.startDate}}">
+                        </div>
+                        <div class="field">
+                            <label>Tanggal Akhir</label>
+                            <input type="date" name="end_date" value="{{.Data.endDate}}">
+                        </div>
+                    </div>
+                    <button class="ui button" type="submit">Filter</button>
+                </form>
+            </div>
+            <div class="content" style="max-height: 300px; overflow-y: auto;">
+                <ul>
+                    {{range .Data.filteredActivities}}
+                    <li>
+                        <strong>{{.action}}:</strong> {{.description}}
+                        <br><small>{{.created_at | formatTime | convertTimestamp}}</small>
+                    </li>
+                    {{end}}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.ui.dropdown').dropdown();
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        const $onlineUsersList = $('#onlineUsersList');
+
+        // Fungsi untuk memuat daftar petugas online
+        function loadOnlineUsers() {
+            $.ajax({
+                url: '/dashboard/online-users',
+                type: 'GET',
+                success: function (response) {
+                    // Pastikan response memiliki data
+                    if (!response || response.error || !Array.isArray(response.data)) {
+                        $onlineUsersList.html('<li>Tidak ada petugas online saat ini.</li>');
+                        return;
+                    }
+
+                    // Bersihkan daftar sebelumnya
+                    $onlineUsersList.empty();
+
+                    // Render daftar petugas
+                    if (response.data.length === 0) {
+                        $onlineUsersList.html('<li>Tidak ada petugas online saat ini.</li>');
+                        return;
+                    }
+
+                    response.data.forEach(function (user) {
+                        console.log(user.email);
+                        const listItem = `<li><strong>${user.nama || 'Tidak Diketahui'}</strong> (${user.email || 'Tidak Ada Email'}) - ${user.role || 'Tidak Ada Peran'}</li>`;
+                        $onlineUsersList.append(listItem);
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Failed to load online users:', error);
+                    $onlineUsersList.html('<li>Gagal memuat data petugas online.</li>');
+                }
+            });
+        }
+
+        // Muat daftar petugas online setiap 1 menit
+        loadOnlineUsers();
+        setInterval(loadOnlineUsers, 60000); // 60 detik
+    });
+</script>
+
+</body>
+</html>

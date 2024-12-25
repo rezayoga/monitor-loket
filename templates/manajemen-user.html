@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2, user-scalable=no"/>
+    <meta name="description" content="{{.Data.KeyApplicationName}}"/>
+    <meta name="keywords" content="{{.Data.KeyApplicationName}}, {{.Data.KeyApplicationOwner}}"/>
+    <meta name="author" content="{{.Data.KeyApplicationAuthor}}"/>
+    <meta name="csrf-token" content="{{.Data.csrfToken}}">
+    <link rel="icon" type="image/png" href="/images/favicon-96x96.png" sizes="96x96"/>
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg"/>
+    <link rel="shortcut icon" href="/images/favicon.ico"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png"/>
+    <link rel="manifest" href="/images/site.webmanifest"/>
+    <title>Daftar User - {{.Data.KeyApplicationName}}</title>
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
+            type="text/css"
+    />
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+    <style>
+        body {
+            -webkit-font-smoothing: antialiased;
+            background-color: #f9f9f9;
+            font-family: 'Quicksand', Arial, sans-serif;
+        }
+
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 250px;
+            background-color: #ffffff;
+            padding: 20px;
+            margin-top: 40px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #content {
+            margin-left: 250px;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        .ui.menu.fixed {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-footer {
+            text-align: center;
+            margin-top: auto;
+            padding-top: 20px;
+            padding-bottom: 40px;
+            border-top: 1px solid #ddd;
+        }
+
+        .sidebar-footer .app-identity {
+            font-size: 12px;
+            color: #888;
+        }
+
+        #search-input {
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        .ui.icon.input i.icon {
+            color: #888;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .sticky-action {
+            position: sticky;
+            right: 0;
+            background-color: #fff;
+            z-index: 2;
+            border-left: 1px solid #ddd;
+        }
+
+        thead .sticky-action {
+            z-index: 3;
+            background-color: #f9fafb;
+        }
+
+        /* Mengatur jarak antar elemen dalam grid */
+        .ui.grid > .column {
+            margin-top: 0.5rem;
+        }
+
+        /* Menyesuaikan tampilan dropdown */
+        .ui.compact.dropdown {
+            padding: 0.5rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        /* Hover effect untuk tombol */
+        .ui.button:hover {
+            background-color: #017b7b !important;
+            color: white !important;
+            transition: all 0.3s ease;
+        }
+
+        .wrap-content {
+            word-wrap: break-word; /* Memastikan teks yang panjang akan membungkus */
+            word-break: break-word; /* Memecah kata panjang yang melebihi batas */
+            white-space: normal; /* Izinkan teks membungkus */
+            max-width: 600px; /* Sesuaikan lebar maksimal (opsional) */
+        }
+
+        .wrap-content .ui.label {
+            display: inline-block; /* Membuat label tampil secara terpisah */
+            margin-top: 5px; /* Memberikan spasi antar label */
+            margin-bottom: 5px; /* Memberikan spasi antar label */
+            word-wrap: break-word; /* Pastikan label teks juga membungkus */
+            overflow-wrap: break-word; /* Alternatif untuk kompatibilitas browser */
+        }
+    </style>
+</head>
+
+<body>
+<div class="ui top fixed menu">
+    <a class="header item" href="https://app.siapsidilan.id/login">{{.Data.KeyApplicationName}}</a>
+    <div class="right menu">
+        <div class="ui dropdown item">
+            Login: {{.Data.KeySessionAdminEmail}}
+            <i class="dropdown icon"></i>
+            <div class="menu">
+                <a class="item" href="/profile">Profile</a>
+                <a class="item" href="/riwayat-aktivitas">Riwayat Aktivitas</a>
+                <div class="divider"></div>
+                <a class="item" href="/auth/logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="sidebar" class="ui vertical menu">
+    {{if not (eq .Data.KeySessionAdminRole "Admin")}}
+    <a class="item" href="/dashboard">
+        <i class="dashboard icon"></i>
+        Dashboard
+    </a>
+    <a class="item" href="/permohonan">
+        <i class="address card icon"></i>
+        Daftar Permohonan
+    </a>
+    {{end}}
+    {{if not (eq .Data.KeySessionAdminRole "Petugas Loket")}}
+    <a class="item active" href="/user">
+        <i class="users card icon"></i>
+        Daftar Petugas
+    </a>
+    {{end}}
+    {{if and (not (eq .Data.KeySessionAdminRole "Admin")) (not (eq .Data.KeySessionAdminRole "Petugas Loket"))}}
+    <a class="item" href="/monitoring-dan-pelaporan">
+        <i class="file alternate icon"></i>
+        Monitoring dan Pelaporan
+    </a>
+    {{end}}
+    <div class="sidebar-footer">
+        <div class="app-identity">
+            {{.Data.KeyApplicationOwner}}
+            <br/>
+            {{.Data.KeyApplicationName}} Versi {{.Data.KeyApplicationVersion}}
+        </div>
+    </div>
+</div>
+
+<div id="content">
+    <div class="ui breadcrumb">
+        <a class="section" href="/dashboard">
+            <i class="arrow left icon"></i> Dashboard
+        </a>
+        <div class="divider"> /</div>
+        <div class="active section">Daftar User</div>
+    </div>
+
+    <div class="ui padded segment">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 class="ui header">Daftar User</h2>
+        </div>
+        {{if eq .Data.QuerySuccess "1"}}
+        <div class="ui positive icon message" id="flash-message" style="text-align: left;">
+            <i class="check circle icon"></i>
+            <div class="content">
+                <div class="header">User berhasil disimpan!</div>
+                <p>Data user baru berhasil disimpan!</p>
+            </div>
+        </div>
+        {{end}}
+
+        {{if eq .Data.QueryDelete "1"}}
+        <div class="ui positive icon message" id="flash-message" style="text-align: left;">
+            <i class="trash alternate outline icon"></i>
+            <div class="content">
+                <div class="header">User berhasil dihapus!</div>
+                <p>Data user berhasil dihapus!</p>
+            </div>
+        </div>
+        {{end}}
+
+        <div class="ui segment" style="padding: 1rem; border-radius: 10px;">
+            <div class="ui stackable grid" style="align-items: center;">
+                <!-- Statistik Total User -->
+                <div class="six wide column" style="text-align: left;">
+                    <div style="display: flex; align-items: center;">
+                        <div style="font-size: 2.5rem; color: #01a3a4; font-weight: bold; margin-right: 1rem;">
+                            {{.Data.total_records}}
+                        </div>
+                        <div style="font-size: 1.2rem; color: #555; font-weight: bold;">Total User</div>
+                    </div>
+                    <!-- Dropdown Per Page -->
+                    <div style="margin-top: 0.5rem;">
+                        <label style="font-size: 0.9rem; color: #666; font-weight: bold;">Tampilkan per halaman:</label>
+                        <select id="per-page" class="ui dropdown" style="margin-left: 0.5rem;">
+                            <option value="3" {{if eq (printf
+                            "%d" .Data.items_per_page) "3"}}selected{{end}}>3</option>
+                            <option value="5" {{if eq (printf
+                            "%d" .Data.items_per_page) "5"}}selected{{end}}>5</option>
+                            <option value="10" {{if eq (printf
+                            "%d" .Data.items_per_page) "10"}}selected{{end}}>10</option>
+                            <option value="20" {{if eq (printf
+                            "%d" .Data.items_per_page) "20"}}selected{{end}}>20</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="six wide column">
+                    <div class="ui fluid icon input"
+                         style="box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); border-radius: 25px;">
+                        <input type="text" id="search-input" value="{{.Data.search}}" placeholder="Cari user...">
+                        <i class="search icon"></i>
+                    </div>
+                </div>
+
+                <!-- Tombol Tambah User -->
+                <div class="four wide column" style="text-align: right;">
+                    <button class="ui labeled icon teal button" id="add-user-button"
+                            style="border-radius: 5px; padding: 0.75rem 1.5rem;">
+                        <i class="plus icon"></i> Tambah User
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="ui teal single line åstriped selectable celled table">
+                <thead>
+                <tr>
+                    <th class="center aligned">E-mail</th>
+                    <th class="center aligned">Nama</th>
+                    <th class="center aligned">Nomor Telepon</th>
+                    <th class="center aligned">NIP</th>
+                    <th class="center aligned">Jabatan</th>
+                    <th class="center aligned">Status Aktif</th>
+                    <th class="center aligned">Role</th>
+<!--                    <th class="center aligned ten wide">Hak Akses</th>-->
+                    <th class="center aligned sticky-action">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{range $user := .Data.KeyListUser}}
+                <tr>
+                    <td class="center aligned"><span class="ui orange circular label">{{$user.email}}</span></td>
+                    <td>{{$user.nama}}</td>
+                    <td class="center aligned">{{$user.phone}}</td>
+                    <td class="center aligned">{{$user.nip}}</td>
+                    <td>{{$user.jabatan}}</td>
+                    <td class="center aligned">
+                        {{if eq $user.is_active true}}
+                        <div class="ui green label">Aktif</div>
+                        {{else}}
+                        <div class="ui red label">Tidak Aktif</div>
+                        {{end}}
+                    </td>
+                    <td class="center aligned">{{$user.role}}</td>
+<!--                    <td class="center aligned wrap-content">-->
+<!--                        {{range $permission := $user.permissions}}-->
+<!--                        <a class="ui grey label">-->
+<!--                            {{$permission.slug}}-->
+<!--                            <div class="detail">-->
+<!--                                {{if eq $permission.method "get"}}melihat-->
+<!--                                {{else if eq $permission.method "post"}}-->
+<!--                                {{else}}{{$permission.method}}{{end}}-->
+<!--                                {{$permission.description}}-->
+<!--                            </div>-->
+<!--                        </a>-->
+<!--                        {{end}}-->
+<!--                    </td>-->
+
+                    <td class="sticky-action center aligned">
+                        <a href="/user/edit/{{$user.id}}" class="ui yellow small labeled icon button">
+                            <i class="edit icon"></i> Edit
+                        </a>
+
+                        {{if eq $user.email "admin@siapsidilan.id"}}
+                        <!-- Tombol akan disembunyikan untuk admin -->
+                        <!-- Tidak ada tombol -->
+                        {{else}}
+<!--                        <a href="#"-->
+<!--                           class="ui red small labeled icon button delete-button"-->
+<!--                           data-id="{{$user.id}}"-->
+<!--                           data-name="{{$user.nama}}">-->
+<!--                            <i class="trash icon"></i> Delete-->
+<!--                        </a>-->
+                        {{end}}
+                    </td>
+                </tr>
+                {{end}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="ui pagination menu">
+        {{if .Data.has_prev_page}}
+        <a class="item"
+           href="?page={{.Data.prev_page}}&per_page={{.Data.items_per_page}}{{if .Data.search}}&search={{.Data.search}}{{end}}">Previous</a>
+        {{else}}
+        <div class="disabled item">Previous</div>
+        {{end}}
+
+        {{range .Data.pages}}
+        {{if eq . -1}}
+        <div class="disabled item">...</div>
+        {{else}}
+        <a class="item {{if eq . $.Data.current_page}}active{{end}}"
+           href="?page={{.}}&per_page={{$.Data.items_per_page}}{{if $.Data.search}}&search={{$.Data.search}}{{end}}">
+            {{.}}
+        </a>
+        {{end}}
+        {{end}}
+
+        {{if .Data.has_next_page}}
+        <a class="item"
+           href="?page={{.Data.next_page}}&per_page={{.Data.items_per_page}}{{if .Data.search}}&search={{.Data.search}}{{end}}">Next</a>
+        {{else}}
+        <div class="disabled item">Next</div>
+        {{end}}
+    </div>
+</div>
+
+<div id="delete-modal" class="ui small modal">
+    <div class="header">Konfirmasi Penghapusan</div>
+    <div class="content" style="text-align: left;">
+        <p>Apakah Anda yakin ingin menghapus user <strong id="record-name"></strong>?</p>
+        <p>Data ini akan dihapus secara permanen dan tidak dapat dikembalikan.</p>
+    </div>
+    <div class="actions">
+        <button class="ui cancel button">Batal</button>
+        <button id="confirm-delete" class="ui red button">Hapus</button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+<script>
+    $(document).ready(function () {
+        const input = $("#search-input");
+        input.focus();
+        const length = input.val().length;
+        input[0].setSelectionRange(length, length); // Mengatur kursor ke paling kanan
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.ui.dropdown').dropdown();
+    });
+
+    $(document).ready(function () {
+        // Fungsi untuk menutup flash message
+        $('#flash-message .close').on('click', function () {
+            $(this).closest('#flash-message').transition('fade');
+        });
+
+        // Auto-close setelah 5 detik
+        setTimeout(function () {
+            $('#flash-message').transition('fade');
+        }, 5000); // 5000 ms = 5 detik
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#add-user-button').on('click', function () {
+            window.location.href = "/user/create";
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        // Redirect saat mengubah jumlah item per halaman
+        // Dropdown Per Page Interaction
+        $('#per-page').on('change', function () {
+            const perPageValue = $(this).val();
+            const params = new URLSearchParams(window.location.search);
+            params.set('per_page', perPageValue);
+            params.set('page', '1'); // Reset ke halaman 1
+            window.location.href = `${window.location.pathname}?${params.toString()}`;
+        });
+
+        // Redirect saat melakukan pencarian
+        $('#search-input').on('input', function () {
+            const searchValue = $(this).val().trim();
+            clearTimeout($.data(this, 'timer'));
+            const wait = setTimeout(() => {
+                const params = new URLSearchParams(window.location.search);
+                params.set('search', searchValue);
+                params.set('page', '1'); // Reset ke halaman pertama
+                window.location.href = `${window.location.pathname}?${params.toString()}`;
+            }, 300); // Delay pencarian 300ms
+            $(this).data('timer', wait);
+        });
+
+        // Redirect ke form tambah user
+        $('#add-user-button').on('click', function () {
+            window.location.href = "/user/create";
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        let deleteId = null;
+
+        // Buka modal ketika tombol delete diklik
+        $('.delete-button').on('click', function (e) {
+            e.preventDefault(); // Hindari reload halaman
+
+            // Ambil ID dan nama arsip dari tombol
+            deleteId = $(this).data('id');
+            const recordName = $(this).data('name');
+
+            // Set nama arsip ke dalam modal
+            $('#record-name').text(recordName);
+
+            // Tampilkan modal
+            $('#delete-modal').modal('show');
+        });
+
+        // Tangani tombol konfirmasi hapus
+        $('#confirm-delete').on('click', function () {
+            if (deleteId) {
+                // Redirect ke endpoint delete dengan ID yang dihapus
+                window.location.href = `/user/delete/${deleteId}`;
+            }
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        let inactivityTime = 0;
+        const maxInactivityTime = 30 * 60 * 1000; // 30 menit dalam milidetik
+        const updateInterval = 1 * 60 * 1000; // Interval minimal untuk ping ke server (1 menit)
+        let lastUpdateTime = 0; // Timestamp terakhir kali aktivitas diperbarui
+
+        // Ambil token CSRF dari meta tag
+        const csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+        // Fungsi untuk mengatur ulang waktu ketidakaktifan
+        const resetInactivity = () => {
+            inactivityTime = 0;
+
+            const currentTime = new Date().getTime();
+            if (currentTime - lastUpdateTime >= updateInterval) {
+                lastUpdateTime = currentTime;
+
+                // Kirim ping ke server untuk memperbarui aktivitas
+                $.ajax({
+                    url: '/update-last-activity',
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-Token': csrfToken // Sisipkan token CSRF ke header
+                    },
+                    error: function (error) {
+                        console.error('Failed to update activity:', error);
+                    }
+                });
+            }
+        };
+
+        // Fungsi untuk logout
+        const logout = () => {
+            window.location.href = '/auth/logout';
+        };
+
+        // Event Listener untuk aktivitas pengguna
+        const events = 'mousemove keydown mousedown scroll touchstart';
+        $(window).on(events, resetInactivity);
+
+        // Timer untuk mendeteksi ketidakaktifan
+        setInterval(() => {
+            inactivityTime += 1000;
+            if (inactivityTime >= maxInactivityTime) {
+                logout();
+            }
+        }, 1000);
+    });
+</script>
+</body>
+</html>

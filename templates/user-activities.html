@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2, user-scalable=no"/>
+    <meta name="description" content="{{.Data.KeyApplicationName}}"/>
+    <meta name="keywords" content="{{.Data.KeyApplicationName}}, {{.Data.KeyApplicationOwner}}"/>
+    <meta name="author" content="{{.Data.KeyApplicationAuthor}}"/>
+
+    <link rel="icon" type="image/png" href="/images/favicon-96x96.png" sizes="96x96"/>
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg"/>
+    <link rel="shortcut icon" href="/images/favicon.ico"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png"/>
+    <link rel="manifest" href="/images/site.webmanifest"/>
+    <title>Riwayat Aktivitas | {{.Data.KeyApplicationName}}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
+          type="text/css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+    <style type="text/css">
+        body {
+            -webkit-font-smoothing: antialiased;
+            background-color: #f9f9f9;
+            font-family: 'Quicksand', Arial, sans-serif;
+        }
+
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 250px;
+            background-color: #ffffff;
+            padding: 20px;
+            margin-top: 40px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #content {
+            margin-left: 250px;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        .ui.menu.fixed {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-footer {
+            text-align: center;
+            margin-top: auto;
+            padding-top: 20px;
+            padding-bottom: 40px;
+            border-top: 1px solid #ddd;
+        }
+
+        .sidebar-footer .app-identity {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .wrap-content {
+            word-wrap: break-word; /* Memastikan teks yang panjang akan membungkus */
+            word-break: break-word; /* Memecah kata panjang yang melebihi batas */
+            white-space: normal; /* Izinkan teks membungkus */
+            max-width: 600px; /* Sesuaikan lebar maksimal (opsional) */
+        }
+
+        .wrap-content .ui.label {
+            display: inline-block; /* Membuat label tampil secara terpisah */
+            margin-top: 5px; /* Memberikan spasi antar label */
+            margin-bottom: 5px; /* Memberikan spasi antar label */
+            word-wrap: break-word; /* Pastikan label teks juga membungkus */
+            overflow-wrap: break-word; /* Alternatif untuk kompatibilitas browser */
+        }
+
+        .table-container {
+            overflow-x: auto;
+            position: relative;
+            margin-top: 10px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+</head>
+<body>
+<div class="ui top fixed menu">
+    <a class="header item" href="https://app.siapsidilan.id/login">{{.Data.KeyApplicationName}}</a>
+    <div class="right menu">
+        <div class="ui dropdown item">
+            Login: {{.Data.KeySessionAdminEmail}}
+            <i class="dropdown icon"></i>
+            <div class="menu">
+                <a class="item" href="/profile">Profile</a>
+                <a class="item" href="/riwayat-aktivitas">Riwayat Aktivitas</a>
+                <div class="divider"></div>
+                <a class="item" href="/auth/logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="sidebar" class="ui vertical menu">
+    {{if not (eq .Data.KeySessionAdminRole "Admin")}}
+    <a class="item active" href="/dashboard">
+        <i class="dashboard icon"></i>
+        Dashboard
+    </a>
+    <a class="item" href="/permohonan">
+        <i class="address card icon"></i>
+        Daftar Permohonan
+    </a>
+    {{end}}
+    {{if not (eq .Data.KeySessionAdminRole "Petugas Loket")}}
+    <a class="item" href="/user">
+        <i class="users card icon"></i>
+        Daftar Petugas
+    </a>
+    {{end}}
+    {{if and (not (eq .Data.KeySessionAdminRole "Admin")) (not (eq .Data.KeySessionAdminRole "Petugas Loket"))}}
+    <a class="item" href="/monitoring-dan-pelaporan">
+        <i class="file alternate icon"></i>
+        Monitoring dan Pelaporan
+    </a>
+    {{end}}
+
+    <div class="sidebar-footer">
+        <div class="app-identity">
+            {{.Data.KeyApplicationOwner}}
+            <br/>
+            {{.Data.KeyApplicationName}} Versi {{.Data.KeyApplicationVersion}}
+        </div>
+    </div>
+</div>
+
+<div id="content">
+    <div class="ui breadcrumb">
+        <a class="section" href="/profile">
+            <i class="arrow left icon"></i> Profile
+        </a>
+        <div class="divider"> /</div>
+        <div class="active section">Riwayat Aktivitas</div>
+    </div>
+    <div class="ui padded segment">
+        <!-- Tombol Tambah Arsip -->
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Riwayat Aktivitas</h2>
+        </div>
+
+        <div class="table-container">
+
+            <table class="ui celled striped table">
+                <thead>
+                <tr>
+                    <th class="center aligned">No</th>
+                    <th class="center aligned">Deskripsi</th>
+                    <th class="center aligned">Perubahan</th>
+                    <th class="center aligned">Aksi</th>
+                    <th class="center aligned">Waktu</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{ if .Data.activities }}
+                {{range $index, $activity := .Data.activities}}
+                <tr class="top aligned">
+                    <td class="center aligned">{{add $index 1}}</td>
+                    <td>{{$activity.description}}</td>
+                    <td>
+                        {{if eq $activity.table_name "app.permohonan"}}
+                        <div class="ui grid">
+                            <div class="eight wide column">
+                                <h5>Sebelum:</h5>
+                                <ul>
+                                    {{range $key, $value := $activity.before}}
+                                    <li><strong>{{$key}}:</strong> {{$value}}</li>
+                                    {{end}}
+                                </ul>
+                            </div>
+                            <div class="eight wide column">
+                                <h5>Sesudah:</h5>
+                                <ul>
+                                    {{range $key, $value := $activity.after}}
+                                    <li><strong>{{$key}}:</strong> {{$value}}</li>
+                                    {{end}}
+                                </ul>
+                            </div>
+                        </div>
+                        {{else}}
+                        <em>-</em>
+                        {{end}}
+                    </td>
+                    <td><span class="ui label">{{$activity.action}}</span></td>
+                    <td>{{formatTime $activity.created_at}}</td>
+                </tr>
+                {{ end }}
+                {{else}}
+                <tr>
+                    <td colspan="5" class="center aligned">Tidak ada aktivitas.</td>
+                </tr>
+                {{end}}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+    <!-- Pagination -->
+    <div class="ui pagination menu">
+        {{if .Data.has_prev_page}}
+        <a class="item" href="?page={{.Data.prev_page}}&per_page={{.Data.items_per_page}}">Previous</a>
+        {{else}}
+        <div class="disabled item">Previous</div>
+        {{end}}
+
+        {{range .Data.pages}}
+        {{if eq . -1}}
+        <div class="disabled item">...</div>
+        {{else}}
+        <a class="item {{if eq . $.Data.current_page}}active{{end}}"
+           href="?page={{.}}&per_page={{$.Data.items_per_page}}">
+            {{.}}
+        </a>
+        {{end}}
+        {{end}}
+
+        {{if .Data.has_next_page}}
+        <a class="item" href="?page={{.Data.next_page}}&per_page={{.Data.items_per_page}}">Next</a>
+        {{else}}
+        <div class="disabled item">Next</div>
+        {{end}}
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('.ui.dropdown').dropdown();
+    });
+
+</script>
+</body>
+</html>

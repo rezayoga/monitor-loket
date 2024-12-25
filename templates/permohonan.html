@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+
+<html lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2, user-scalable=no"/>
+    <meta name="description" content="{{.Data.KeyApplicationName}}"/>
+    <meta name="keywords" content="{{.Data.KeyApplicationName}}, {{.Data.KeyApplicationOwner}}"/>
+    <meta name="author" content="{{.Data.KeyApplicationAuthor}}"/>
+    <meta name="csrf-token" content="{{.Data.csrfToken}}">
+    <link rel="icon" type="image/png" href="/images/favicon-96x96.png" sizes="96x96"/>
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg"/>
+    <link rel="shortcut icon" href="/images/favicon.ico"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png"/>
+    <link rel="manifest" href="/images/site.webmanifest"/>
+    <title>{{.Data.KeyApplicationName}}</title>
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
+            type="text/css"
+    />
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+    <style type="text/css">
+        body {
+            -webkit-font-smoothing: antialiased;
+            background-color: #f9f9f9;
+            font-family: 'Quicksand', Arial, sans-serif;
+        }
+
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 250px;
+            background-color: #ffffff;
+            padding: 20px;
+            margin-top: 40px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #content {
+            margin-left: 250px;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        .ui.menu.fixed {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Styling for logo and version text */
+        .sidebar-footer {
+            text-align: center;
+            margin-top: auto;
+            padding-top: 20px;
+            padding-bottom: 40px;
+            border-top: 1px solid #ddd;
+        }
+
+        .sidebar-footer .app-identity {
+            font-size: 12px;
+            color: #888;
+        }
+
+        #search-input {
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        .ui.icon.input i.icon {
+            color: #888;
+        }
+
+    </style>
+    <style>
+        /* Margin untuk memisahkan elemen grid */
+        .ui.grid > .column {
+            margin-top: 1rem;
+        }
+
+        /* Floating notification animation */
+        #search-notification {
+            animation: fadeIn ease-in-out 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+    <style>
+        .ui.card .header {
+            font-weight: 700;
+        }
+
+        .ui.input input {
+            font-size: 1.2rem;
+        }
+
+        .ui.button {
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+        }
+    </style>
+    <style>
+        /* Mengatur jarak antar elemen dalam grid */
+        .ui.grid > .column {
+            margin-top: 0.5rem;
+        }
+
+        /* Menyesuaikan tampilan dropdown */
+        .ui.compact.dropdown {
+            padding: 0.5rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        /* Hover effect untuk tombol */
+        .ui.button:hover {
+            background-color: #1b5d90 !important;
+            color: white !important;
+            transition: all 0.3s ease;
+        }
+
+    </style>
+    <style>
+        /* Tambahkan style untuk membuat kolom Action sticky */
+        .table-container {
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .sticky-action {
+            position: sticky;
+            right: 0;
+            background-color: #fff; /* Warna latar belakang */
+            z-index: 2;
+            border-left: 1px solid #ddd; /* Garis pemisah */
+        }
+
+        thead .sticky-action {
+            z-index: 3;
+            background-color: #f9fafb; /* Warna latar belakang header */
+        }
+    </style>
+    <style>
+        span {
+            background-color: #FFFACD; /* Warna kuning soft flat */
+            font-weight: bold;
+        }
+    </style>
+
+</head>
+
+<body>
+<div class="ui top fixed menu">
+    <a class="header item" href="https://app.siapsidilan.id/login">{{.Data.KeyApplicationName}}</a>
+    <div class="right menu">
+        <div class="ui dropdown item">
+            Login: {{.Data.KeySessionAdminEmail}}
+            <i class="dropdown icon"></i>
+            <div class="menu">
+                <a class="item" href="/profile">Profile</a>
+                <a class="item" href="/riwayat-aktivitas">Riwayat Aktivitas</a>
+                <div class="divider"></div>
+                <a class="item" href="/auth/logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="sidebar" class="ui vertical menu">
+    {{if not (eq .Data.KeySessionAdminRole "Admin")}}
+    <a class="item" href="/dashboard">
+        <i class="dashboard icon"></i>
+        Dashboard
+    </a>
+    <a class="item active" href="/permohonan">
+        <i class="address card icon"></i>
+        Daftar Permohonan
+    </a>
+    {{end}}
+    {{if not (eq .Data.KeySessionAdminRole "Petugas Loket")}}
+    <a class="item" href="/user">
+        <i class="users card icon"></i>
+        Daftar Petugas
+    </a>
+    {{end}}
+    {{if and (not (eq .Data.KeySessionAdminRole "Admin")) (not (eq .Data.KeySessionAdminRole "Petugas Loket"))}}
+    <a class="item" href="/monitoring-dan-pelaporan">
+        <i class="file alternate icon"></i>
+        Monitoring dan Pelaporan
+    </a>
+    {{end}}
+
+    <!-- Logo and Version Section at the Bottom of Sidebar -->
+    <div class="sidebar-footer">
+        <div class="app-identity">
+            {{.Data.KeyApplicationOwner}}
+            <br/>
+            {{.Data.KeyApplicationName}} Versi {{.Data.KeyApplicationVersion}}
+        </div>
+    </div>
+</div>
+
+<div id="content">
+    <div class="ui breadcrumb">
+        <a class="section" href="/dashboard">
+            <i class="arrow left icon"></i> Dashboard
+        </a>
+        <div class="divider"> /</div>
+        <div class="active section">Daftar Permohonan</div>
+    </div>
+    <div class="ui padded segment">
+        <!-- Tombol Tambah Permohonan -->
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 class="ui header">Daftar Permohonan</h2>
+        </div>
+        {{if eq .Data.QuerySuccess "1"}}
+        <div class="ui positive icon message" id="flash-message" style="text-align: left;">
+            <i class="check circle icon"></i>
+            <div class="content">
+                <div class="header">Permohonan berhasil disimpan!</div>
+                <p>Data permohonan baru berhasil disimpan!</p>
+            </div>
+        </div>
+        {{end}}
+
+        {{if eq .Data.QueryDelete "1"}}
+        <div class="ui positive icon message" id="flash-message" style="text-align: left;">
+            <i class="trash alternate outline icon"></i>
+            <div class="content">
+                <div class="header">Permohonan berhasil dihapus!</div>
+                <p>Data permohonan berhasil dihapus!</p>
+            </div>
+        </div>
+        {{end}}
+
+        <div class="ui segment" style="padding: 1rem; border-radius: 10px;">
+            <div class="ui stackable grid" style="align-items: center;">
+                <!-- Statistik Total Permohonan -->
+                <div class="eight wide column" style="text-align: left;">
+                    <div style="display: flex; align-items: center;">
+                        <div style="font-size: 2.5rem; color: #0E6EB8; font-weight: bold; margin-right: 1rem;">
+                            {{.Data.total_records}}
+                        </div>
+                        <div style="font-size: 1.2rem; color: #555; font-weight: bold;">Total Permohonan</div>
+                    </div>
+                    <!-- Dropdown Per Page -->
+                    <div style="margin-top: 0.5rem;">
+                        <label style="font-size: 0.9rem; color: #666; font-weight: bold;">Tampilkan per halaman:</label>
+                        <select id="per-page" class="ui dropdown" style="margin-left: 0.5rem;">
+                            <option value="5" {{if eq (printf
+                            "%d" .Data.items_per_page) "5"}}selected{{end}}>5</option>
+                            <option value="10" {{if eq (printf
+                            "%d" .Data.items_per_page) "10"}}selected{{end}}>10</option>
+                            <option value="20" {{if eq (printf
+                            "%d" .Data.items_per_page) "20"}}selected{{end}}>20</option>
+                            <option value="50" {{if eq (printf
+                            "%d" .Data.items_per_page) "50"}}selected{{end}}>50</option>
+                            <option value="100" {{if eq (printf
+                            "%d" .Data.items_per_page) "100"}}selected{{end}}>100</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="four wide column">
+                    <div class="ui fluid icon input" id="search-bar"
+                         style="box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); border-radius: 25px;">
+                        <input type="text" id="search-input" value="{{.Data.search}}" placeholder="Cari permohonan...">
+                        <i class="search icon"></i>
+                    </div>
+                </div>
+
+                <!-- Tombol Tambah Permohonan -->
+                <div class="four wide column" style="text-align: right;">
+                    <button class="ui labeled icon blue button" id="add-archive-button"
+                            style="border-radius: 5px; padding: 0.75rem 1.5rem;">
+                        <i class="plus icon"></i> Tambah Permohonan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Notification for Search -->
+        <div id="search-notification" class="ui blue message"
+             style="display: none; position: fixed; top: 20px; right: 20px; z-index: 1000;">
+            <i class="close icon"></i>
+            <div class="header">
+                Pencarian Diperbarui!
+            </div>
+            <p>Total permohonan: <span id="total-records">{{.Data.total_records}}</span></p>
+        </div>
+
+        <!-- Table Container -->
+        <div class="scroll-container"
+             style="overflow-x: auto; white-space: nowrap; padding-top: 5px; padding-bottom: 1rem;">
+            <div class="ui segment">
+                {{ $search := .Data.search }}
+                {{ if .Data.KeyListPermohonan }}
+                {{ range $permohonan := .Data.KeyListPermohonan }}
+                <table class="ui very compact striped celled selectable definition table">
+                    <thead>
+                    <tr>
+                        <th class="collapsing">Kolom</th>
+                        <th>Nilai</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Dikuasakan</td>
+                        <td class="center aligned">
+                            {{if $permohonan.dikuasakan}}
+                            <span class="ui green circular label">Ya</span>
+                            {{else}}
+                            <span class="ui orange circular label">Tidak</span>
+                            {{end}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Nama Kuasa</td>
+                        <td>{{highlightText $permohonan.nama_kuasa $search}}</td>
+                    </tr>
+                    <tr>
+                        <td>Nomor Berkas</td>
+                        <td>{{highlightText $permohonan.nomor_berkas $search}}</td>
+                    </tr>
+                    <tr>
+                        <td>Telepon</td>
+                        <td>{{highlightText $permohonan.phone $search}}</td>
+                    </tr>
+                    <tr>
+                        <td>Nama Pemohon</td>
+                        <td>{{highlightText $permohonan.nama_pemohon $search}}</td>
+                    </tr>
+                    <tr>
+                        <td>Jenis Permohonan</td>
+                        <td>{{highlightText $permohonan.jenis_permohonan $search}}</td>
+                    </tr>
+                    <tr>
+                        <td>PPAT</td>
+                        <td>{{highlightText $permohonan.ppat $search}}</td>
+                    </tr>
+                    <tr>
+                        <td>Dibuat Tanggal</td>
+                        <td><span class="ui tag label">{{highlightText ($permohonan.created_at | formatTime | convertTimestamp) $search}}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Dibuat Oleh</td>
+                        <td>
+                            <span class="ui label">
+                              <i class="user icon"></i>
+                              {{highlightText $permohonan.created_by_nama $search}}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Diperbarui Tanggal</td>
+                        <td><span class="ui tag label">{{highlightText ($permohonan.updated_at | formatTime | convertTimestamp) $search}}</span></td>
+                    </tr>
+                    <tr>
+                        <td>Diperbarui Oleh</td>
+                        <td><span class="ui label">
+                            <i class="user icon"></i>{{highlightText $permohonan.updated_by_nama $search}}</span></td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="2" class="center aligned">
+                            <a href="/permohonan/edit/{{$permohonan.id}}"
+                               class="ui yellow small labeled icon button">
+                                <i class="edit icon"></i> Edit
+                            </a>
+                            <a href="#"
+                               class="ui red small labeled icon button delete-button"
+                               data-id="{{$permohonan.id}}"
+                               data-name="{{$permohonan.nomor_berkas}}">
+                                <i class="trash icon"></i> Delete
+                            </a>
+                        </td>
+                    </tr>
+                    </tfoot>
+                </table>
+                <div class="ui divider"></div>
+                {{ end }}
+                {{ else }}
+                <div class="ui message warning">
+                    <div class="header">Tidak ada data permohonan ditemukan</div>
+                    <p>Jika Anda menggunakan pencarian, silakan coba kata kunci lain atau tambahkan data baru.</p>
+                </div>
+                {{ end }}
+            </div>
+        </div>
+        <!-- Pagination -->
+        <div class="ui pagination menu">
+            {{if .Data.has_prev_page}}
+            <a class="item"
+               href="?page={{.Data.prev_page}}&per_page={{.Data.items_per_page}}{{if .Data.search}}&search={{.Data.search}}{{end}}{{if .Data.filter_kecamatan}}&filter_kecamatan={{.Data.filter_kecamatan}}{{end}}{{if .Data.filter_kelurahan}}&filter_kelurahan={{.Data.filter_kelurahan}}{{end}}">Previous</a>
+            {{else}}
+            <div class="disabled item">Previous</div>
+            {{end}}
+
+            {{range .Data.pages}}
+            {{if eq . -1}}
+            <div class="disabled item">...</div>
+            {{else}}
+            <a class="item {{if eq . $.Data.current_page}}active{{end}}"
+               href="?page={{.}}&per_page={{$.Data.items_per_page}}{{if $.Data.search}}&search={{$.Data.search}}{{end}}{{if $.Data.filter_kecamatan}}&filter_kecamatan={{$.Data.filter_kecamatan}}{{end}}{{if $.Data.filter_kelurahan}}&filter_kelurahan={{$.Data.filter_kelurahan}}{{end}}">
+                {{.}}
+            </a>
+            {{end}}
+            {{end}}
+
+            {{if .Data.has_next_page}}
+            <a class="item"
+               href="?page={{.Data.next_page}}&per_page={{.Data.items_per_page}}{{if .Data.search}}&search={{.Data.search}}{{end}}{{if .Data.filter_kecamatan}}&filter_kecamatan={{.Data.filter_kecamatan}}{{end}}{{if .Data.filter_kelurahan}}&filter_kelurahan={{.Data.filter_kelurahan}}{{end}}">Next</a>
+            {{else}}
+            <div class="disabled item">Next</div>
+            {{end}}
+        </div>
+
+    </div>
+
+    <div id="delete-modal" class="ui small modal">
+        <div class="header">Konfirmasi Penghapusan</div>
+        <div class="content" style="text-align: left;">
+            <p>Apakah Anda yakin ingin menghapus permohonan dengan nomor hak <strong id="record-name"></strong>?</p>
+            <p>Data ini akan dihapus secara permanen dan tidak dapat dikembalikan.</p>
+        </div>
+        <div class="actions">
+            <button class="ui cancel button">Batal</button>
+            <button id="confirm-delete" class="ui red button">Hapus</button>
+        </div>
+    </div>
+</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Event listener untuk input pencarian
+            // Trigger pencarian ketika filter berubah
+            $('#filter-kecamatan, #filter-kelurahan').on('change', function () {
+                const search = $('#search-input').val().trim();
+
+                const params = new URLSearchParams(window.location.search);
+                if (search) {
+                    params.set('search', search);
+                } else {
+                    params.delete('search');
+                }
+
+                params.set('page', '1'); // Reset ke halaman pertama
+                window.location.href = `${window.location.pathname}?${params.toString()}`;
+            });
+
+            // Trigger pencarian ketika input search berubah
+            $('#search-input').on('input', function () {
+                clearTimeout($.data(this, 'timer'));
+                const wait = setTimeout(() => {
+                    const search = $(this).val().trim();
+
+                    const params = new URLSearchParams(window.location.search);
+                    if (search) {
+                        params.set('search', search);
+                    } else {
+                        params.delete('search');
+                    }
+
+                    params.set('page', '1'); // Reset ke halaman pertama
+                    window.location.href = `${window.location.pathname}?${params.toString()}`;
+                }, 300); // Delay 300ms
+                $(this).data('timer', wait);
+            });
+
+            // Menghilangkan kelas loading setelah halaman selesai dimuat
+            $(window).on('load', function () {
+                // Menghilangkan kelas loading pada search-bar
+                $('#search-bar').removeClass('loading');
+
+                // Enable kembali input setelah halaman dimuat
+                $('#search-input').prop('disabled', false);
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            const input = $("#search-input");
+            input.focus();
+            const length = input.val().length;
+            input[0].setSelectionRange(length, length); // Mengatur kursor ke paling kanan
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('.ui.dropdown').dropdown();
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#add-archive-button').on('click', function () {
+                // Ganti URL berikut dengan rute menuju form tambah permohonan.
+                window.location.href = "/permohonan/create";
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            // Event listener untuk input pencarian
+            $('#search-input').on('input', function () {
+                let searchValue = $(this).val().trim();
+
+                // Debounce untuk mengurangi jumlah request
+                clearTimeout($.data(this, 'timer'));
+                let wait = setTimeout(() => {
+                    // Tambahkan kelas loading pada search-bar
+                    $('#search-bar').addClass('loading');
+
+                    // Disable input saat pencarian sedang berlangsung
+                    $('#search-input').prop('disabled', true);
+
+                    // Redirect dengan parameter search
+                    let params = new URLSearchParams(window.location.search);
+                    params.set('search', searchValue);
+                    params.set('page', '1'); // Reset ke halaman 1
+                    window.location.href = `${window.location.pathname}?${params.toString()}`;
+                }, 300); // Delay 300ms
+                $(this).data('timer', wait);
+            });
+
+            // Menghilangkan kelas loading setelah halaman selesai dimuat
+            $(window).on('load', function () {
+                $('#search-bar').removeClass('loading');
+                $('#search-input').prop('disabled', false);
+            });
+
+            // Floating Notification Logic
+            $('#search-notification .close').on('click', function () {
+                $('#search-notification').hide();
+            });
+
+            // Simulasi Pencarian Berhasil (bisa disesuaikan dengan event backend)
+            const totalRecords = {{.Data.total_records}};
+            if (totalRecords > 0) {
+                $('#total-records').text(totalRecords);
+                $('#search-notification').fadeIn().delay(5000).fadeOut();
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            // Dropdown Per Page Interaction
+            $('#per-page').on('change', function () {
+                const perPageValue = $(this).val();
+                const params = new URLSearchParams(window.location.search);
+                params.set('per_page', perPageValue);
+                params.set('page', '1'); // Reset ke halaman 1
+                window.location.href = `${window.location.pathname}?${params.toString()}`;
+            });
+
+            // Search Bar Interaction
+            $('#search-input').on('input', function () {
+                const searchValue = $(this).val().trim();
+                clearTimeout($.data(this, 'timer'));
+                const wait = setTimeout(() => {
+                    const params = new URLSearchParams(window.location.search);
+                    params.set('search', searchValue);
+                    params.set('page', '1'); // Reset ke halaman 1
+                    window.location.href = `${window.location.pathname}?${params.toString()}`;
+                }, 300); // Delay 300ms
+                $(this).data('timer', wait);
+            });
+        });
+
+        $(document).ready(function () {
+            // Fungsi untuk menutup flash message
+            $('#flash-message .close').on('click', function () {
+                $(this).closest('#flash-message').transition('fade');
+            });
+
+            // Auto-close setelah 5 detik
+            setTimeout(function () {
+                $('#flash-message').transition('fade');
+            }, 5000); // 5000 ms = 5 detik
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            let deleteId = null;
+
+            // Buka modal ketika tombol delete diklik
+            $('.delete-button').on('click', function (e) {
+                e.preventDefault(); // Hindari reload halaman
+
+                // Ambil ID dan nama permohonan dari tombol
+                deleteId = $(this).data('id');
+                const recordName = $(this).data('name');
+
+                // Set nama permohonan ke dalam modal
+                $('#record-name').text(recordName);
+
+                // Tampilkan modal
+                $('#delete-modal').modal('show');
+            });
+
+            // Tangani tombol konfirmasi hapus
+            $('#confirm-delete').on('click', function () {
+                if (deleteId) {
+                    // Redirect ke endpoint delete dengan ID yang dihapus
+                    window.location.href = `/permohonan/delete/${deleteId}`;
+                }
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            let inactivityTime = 0;
+            const maxInactivityTime = 30 * 60 * 1000; // 30 menit dalam milidetik
+            const updateInterval = 1 * 60 * 1000; // Interval minimal untuk ping ke server (1 menit)
+            let lastUpdateTime = 0; // Timestamp terakhir kali aktivitas diperbarui
+
+            // Ambil token CSRF dari meta tag
+            const csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+            // Fungsi untuk mengatur ulang waktu ketidakaktifan
+            const resetInactivity = () => {
+                inactivityTime = 0;
+
+                const currentTime = new Date().getTime();
+                if (currentTime - lastUpdateTime >= updateInterval) {
+                    lastUpdateTime = currentTime;
+
+                    // Kirim ping ke server untuk memperbarui aktivitas
+                    $.ajax({
+                        url: '/update-last-activity',
+                        type: 'POST',
+                        headers: {
+                            'X-CSRF-Token': csrfToken // Sisipkan token CSRF ke header
+                        },
+                        error: function (error) {
+                            console.error('Failed to update activity:', error);
+                        }
+                    });
+                }
+            };
+
+            // Fungsi untuk logout
+            const logout = () => {
+                window.location.href = '/auth/logout';
+            };
+
+            // Event Listener untuk aktivitas pengguna
+            const events = 'mousemove keydown mousedown scroll touchstart';
+            $(window).on(events, resetInactivity);
+
+            // Timer untuk mendeteksi ketidakaktifan
+            setInterval(() => {
+                inactivityTime += 1000;
+                if (inactivityTime >= maxInactivityTime) {
+                    logout();
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
