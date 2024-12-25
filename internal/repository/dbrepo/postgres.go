@@ -1599,6 +1599,8 @@ func (m *PostgresDBRepo) GetFilteredPermohonanRecords(filter string, limit int) 
 		OR COALESCE(p.jenis_permohonan, '') ILIKE '%' || $1 || '%'
 		OR COALESCE(p.ppat, '') ILIKE '%' || $1 || '%'
 		OR COALESCE(p.created_by, '') ILIKE '%' || $1 || '%'
+		OR COALESCE(u1.nama, '') ILIKE '%' || $1 || '%'
+		OR COALESCE(u2.nama, '') ILIKE '%' || $1 || '%'
 	`
 
 	// Query dengan COALESCE
