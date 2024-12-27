@@ -557,7 +557,7 @@ func (m *PostgresDBRepo) UpdatePassword(userID, newPassword string) error {
 
 func (m *PostgresDBRepo) LogActivity(activity map[string]interface{}) error {
 	query := `
-		INSERT INTO app.activities (
+		INSERT INTO app.activities_monitor_loket (
 			id, user_id, table_name, record_id, action, description, changes, created_at
 		) VALUES (
 			$1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP
@@ -1365,7 +1365,7 @@ func (m *PostgresDBRepo) GetUserPermissions(userID string) ([]map[string]interfa
 func (m *PostgresDBRepo) CountActivities() (map[string]int, error) {
 	query := `
         SELECT action, table_name, COUNT(*) 
-        FROM app.activities 
+        FROM app.activities_monitor_loket 
         GROUP BY action, table_name
     `
 
@@ -1392,7 +1392,7 @@ func (m *PostgresDBRepo) CountActivities() (map[string]int, error) {
 func (m *PostgresDBRepo) GetRecentActivities(limit int) ([]map[string]interface{}, error) {
 	query := `
         SELECT id, user_id, table_name, action, description, created_at 
-        FROM app.activities 
+        FROM app.activities_monitor_loket 
         ORDER BY created_at DESC 
         LIMIT $1
     `
@@ -1428,7 +1428,7 @@ func (m *PostgresDBRepo) GetRecentActivities(limit int) ([]map[string]interface{
 func (m *PostgresDBRepo) CountActivitiesByTable() (map[string]int, error) {
 	query := `
         SELECT table_name, COUNT(*) 
-        FROM app.activities 
+        FROM app.activities_monitor_loket 
         GROUP BY table_name
     `
 
@@ -1456,7 +1456,7 @@ func (m *PostgresDBRepo) GetFilteredActivities(startDate, endDate string) ([]map
 	// Gunakan nilai NULL jika string kosong
 	query := `
         SELECT id, user_id, table_name, action, description, created_at 
-        FROM app.activities 
+        FROM app.activities_monitor_loket 
         WHERE ($1::date IS NULL OR created_at >= $1::date)
         AND ($2::date IS NULL OR created_at <= $2::date)
         ORDER BY created_at DESC
@@ -1526,7 +1526,7 @@ func (m *PostgresDBRepo) GetFilteredPermohonanChanges(filter string) ([]models.P
 			jsonb_pretty(changes->'before') AS before_data,
 			jsonb_pretty(changes->'after') AS after_data
 		FROM 
-			app.activities
+			app.activities_monitor_loket
 		WHERE 
 			table_name = 'app.permohonan' 
 			AND changes IS NOT NULL
@@ -1697,7 +1697,7 @@ func (m *PostgresDBRepo) GetUserActivities(userID string, page, perPage int) ([]
 	// Query for activities
 	query := `
         SELECT id, table_name, action, description, changes, created_at 
-        FROM app.activities 
+        FROM app.activities_monitor_loket 
         WHERE user_id = $1
         ORDER BY created_at DESC 
         LIMIT $2 OFFSET $3
@@ -1732,7 +1732,7 @@ func (m *PostgresDBRepo) GetUserActivities(userID string, page, perPage int) ([]
 	var total int
 	countQuery := `
         SELECT COUNT(*) 
-        FROM app.activities 
+        FROM app.activities_monitor_loket 
         WHERE user_id = $1
     `
 	err = m.DB.QueryRow(countQuery, userID).Scan(&total)
