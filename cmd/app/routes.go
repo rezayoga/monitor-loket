@@ -198,7 +198,8 @@ func (app *application) middleware(next http.Handler) http.Handler {
 			r.URL.Path == "/auth/logout" || r.URL.Path == "/profile" ||
 			r.URL.Path == "/images/logo.png" || r.URL.Path == "/images/favicon-96x96.png" ||
 			r.URL.Path == "/images/favicon.svg" || r.URL.Path == "/images/favicon.ico" ||
-			r.URL.Path == "/images/apple-touch-icon.png" || r.URL.Path == "/images/site.webmanifest" {
+			r.URL.Path == "/images/apple-touch-icon.png" || r.URL.Path == "/images/site.webmanifest" ||
+			r.URL.Path == "/images/web-app-manifest-192x192.png" || r.URL.Path == "/images/web-app-manifest-512x512.png" {
 
 			next.ServeHTTP(w, r.WithContext(ctx))
 			return
