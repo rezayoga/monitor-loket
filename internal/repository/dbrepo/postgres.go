@@ -128,9 +128,11 @@ func (m *PostgresDBRepo) CreatePermohonan(records []map[string]interface{}) ([]s
 	// Query dasar dengan placeholder
 	query := `
 		INSERT INTO app.permohonan (
-			dikuasakan, nama_kuasa, nomor_berkas, phone, nama_pemohon, jenis_permohonan, ppat, created_at, created_by
+			dikuasakan, nama_kuasa, nomor_berkas, phone, nama_pemohon, 
+		                            jenis_permohonan, ppat, created_at, created_by,
+		                            nama_penyerah_berkas, nomor_hak, jenis_hak, kecamatan, kelurahan
 		) VALUES (
-			$1, $2, $3, $4, $5, $6, $7, $8, $9
+			$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
 		) RETURNING id`
 
 	var insertedIDs []string
@@ -148,6 +150,11 @@ func (m *PostgresDBRepo) CreatePermohonan(records []map[string]interface{}) ([]s
 			record["ppat"],             // Text
 			time.Now(),                 // Timestamp (created_at)
 			record["created_by"],       // Text (UUID pengguna)
+			record["nama_penyerah_berkas"],
+			record["nomor_hak"],
+			record["jenis_hak"],
+			record["kecamatan"],
+			record["kelurahan"],
 		}
 
 		// Debug log untuk record yang sedang diproses
@@ -200,8 +207,14 @@ func (m *PostgresDBRepo) GetAllPermohonan(page, perPage int, sort, order, search
             p.ppat ILIKE '%%%s%%' OR
 			p.created_by ILIKE '%%%s%%' OR
 			u1.nama ILIKE '%%%s%%' OR
-			u2.nama ILIKE '%%%s%%'
-        )`, search, search, search, search, search, search, search, search, search, search)
+			u2.nama ILIKE '%%%s%%' OR
+			p.nama_penyerah_berkas ILIKE '%%%s%%' OR
+			p.nomor_hak ILIKE '%%%s%%' OR
+			p.jenis_hak ILIKE '%%%s%%' OR
+			p.kecamatan ILIKE '%%%s%%' OR
+			p.kelurahan ILIKE '%%%s%%'
+        )`, search, search, search, search, search, search, search, search, search, search,
+			search, search, search, search, search)
 	}
 
 	// Pagination
@@ -236,7 +249,12 @@ func (m *PostgresDBRepo) GetAllPermohonan(page, perPage int, sort, order, search
             COALESCE(p.updated_at, '2000-01-01 00:00:00') AS updated_at,
             COALESCE(p.updated_by, '') AS updated_by,
             COALESCE(u1.nama, '') AS created_by_name,
-            COALESCE(u2.nama, '') AS updated_by_name
+            COALESCE(u2.nama, '') AS updated_by_name,
+            COALESCE(p.nama_penyerah_berkas, '') AS nama_penyerah_berkas,
+            COALESCE(p.nomor_hak, '') AS nomor_hak,
+            COALESCE(p.jenis_hak, '') AS jenis_hak,
+            COALESCE(p.kecamatan, '') AS kecamatan,
+            COALESCE(p.kelurahan, '') AS kelurahan
         FROM app.permohonan p
         LEFT JOIN public.users u1 ON p.created_by::uuid = u1.id::uuid
         LEFT JOIN public.users u2 ON p.updated_by::uuid = u2.id::uuid
@@ -258,32 +276,37 @@ func (m *PostgresDBRepo) GetAllPermohonan(page, perPage int, sort, order, search
 	// Process the rows
 	var permohonans []map[string]interface{}
 	for rows.Next() {
-		var id, namaKuasa, nomorBerkas, phone, namaPemohon, jenisPermohonan, ppat, createdBy, updatedBy, createdByNama, updatedByNama string
+		var id, namaKuasa, nomorBerkas, phone, namaPemohon, jenisPermohonan, ppat, createdBy, updatedBy, createdByNama, updatedByNama, namaPenyerahBerkas, nomorHak, jenisHak, kecamatan, kelurahan string
 		var dikuasakan bool
 		var createdAt, updatedAt time.Time
 		err = rows.Scan(
 			&id, &dikuasakan, &namaKuasa, &nomorBerkas, &phone, &namaPemohon, &jenisPermohonan, &ppat, &createdAt, &createdBy, &updatedAt, &updatedBy,
-			&createdByNama, &updatedByNama,
+			&createdByNama, &updatedByNama, &namaPenyerahBerkas, &nomorHak, &jenisHak, &kecamatan, &kelurahan,
 		)
 		if err != nil {
 			return nil, 0, err
 		}
 
 		permohonans = append(permohonans, map[string]interface{}{
-			"id":               id,
-			"dikuasakan":       dikuasakan,
-			"nama_kuasa":       namaKuasa,
-			"nomor_berkas":     nomorBerkas,
-			"phone":            phone,
-			"nama_pemohon":     namaPemohon,
-			"jenis_permohonan": jenisPermohonan,
-			"ppat":             ppat,
-			"created_at":       createdAt,
-			"created_by":       createdBy,
-			"updated_at":       updatedAt,
-			"updated_by":       updatedBy,
-			"created_by_nama":  createdByNama,
-			"updated_by_nama":  updatedByNama,
+			"id":                   id,
+			"dikuasakan":           dikuasakan,
+			"nama_kuasa":           namaKuasa,
+			"nomor_berkas":         nomorBerkas,
+			"phone":                phone,
+			"nama_pemohon":         namaPemohon,
+			"jenis_permohonan":     jenisPermohonan,
+			"ppat":                 ppat,
+			"created_at":           createdAt,
+			"created_by":           createdBy,
+			"updated_at":           updatedAt,
+			"updated_by":           updatedBy,
+			"created_by_nama":      createdByNama,
+			"updated_by_nama":      updatedByNama,
+			"nama_penyerah_berkas": namaPenyerahBerkas,
+			"nomor_hak":            nomorHak,
+			"jenis_hak":            jenisHak,
+			"kecamatan":            kecamatan,
+			"kelurahan":            kelurahan,
 		})
 	}
 
@@ -320,8 +343,14 @@ func (m *PostgresDBRepo) GetAllPermohonanByUserID(page, perPage int, sort, order
             p.ppat ILIKE '%%%s%%' OR
 			p.created_by ILIKE '%%%s%%' OR
 			u1.nama ILIKE '%%%s%%' OR
-			u2.nama ILIKE '%%%s%%'
-        )`, search, search, search, search, search, search, search, search, search, search)
+			u2.nama ILIKE '%%%s%%' OR
+			p.nama_penyerah_berkas ILIKE '%%%s%%' OR
+			p.nomor_hak ILIKE '%%%s%%' OR
+			p.jenis_hak ILIKE '%%%s%%' OR
+			p.kecamatan ILIKE '%%%s%%' OR
+			p.kelurahan ILIKE '%%%s%%'
+        )`, search, search, search, search, search, search, search, search, search, search,
+			search, search, search, search, search)
 	}
 
 	// Pagination
@@ -356,7 +385,12 @@ func (m *PostgresDBRepo) GetAllPermohonanByUserID(page, perPage int, sort, order
             COALESCE(p.updated_at, '2000-01-01 00:00:00') AS updated_at,
             COALESCE(p.updated_by, '') AS updated_by,
             COALESCE(u1.nama, '') AS created_by_name,
-            COALESCE(u2.nama, '') AS updated_by_name
+            COALESCE(u2.nama, '') AS updated_by_name,
+            COALESCE(p.nama_penyerah_berkas, '') AS nama_penyerah_berkas,
+            COALESCE(p.nomor_hak, '') AS nomor_hak,
+            COALESCE(p.jenis_hak, '') AS jenis_hak,
+            COALESCE(p.kecamatan, '') AS kecamatan,
+            COALESCE(p.kelurahan, '') AS kelurahan
         FROM app.permohonan p
         LEFT JOIN public.users u1 ON p.created_by::uuid = u1.id::uuid
         LEFT JOIN public.users u2 ON p.updated_by::uuid = u2.id::uuid
@@ -380,32 +414,37 @@ func (m *PostgresDBRepo) GetAllPermohonanByUserID(page, perPage int, sort, order
 	// Process the rows
 	var permohonans []map[string]interface{}
 	for rows.Next() {
-		var id, namaKuasa, nomorBerkas, phone, namaPemohon, jenisPermohonan, ppat, createdBy, updatedBy, createdByNama, updatedByNama string
+		var id, namaKuasa, nomorBerkas, phone, namaPemohon, jenisPermohonan, ppat, createdBy, updatedBy, createdByNama, updatedByNama, namaPenyerahBerkas, nomorHak, jenisHak, kecamatan, kelurahan string
 		var dikuasakan bool
 		var createdAt, updatedAt time.Time
 		err = rows.Scan(
 			&id, &dikuasakan, &namaKuasa, &nomorBerkas, &phone, &namaPemohon, &jenisPermohonan, &ppat, &createdAt, &createdBy, &updatedAt, &updatedBy,
-			&createdByNama, &updatedByNama,
+			&createdByNama, &updatedByNama, &namaPenyerahBerkas, &nomorHak, &jenisHak, &kecamatan, &kelurahan,
 		)
 		if err != nil {
 			return nil, 0, err
 		}
 
 		permohonans = append(permohonans, map[string]interface{}{
-			"id":               id,
-			"dikuasakan":       dikuasakan,
-			"nama_kuasa":       namaKuasa,
-			"nomor_berkas":     nomorBerkas,
-			"phone":            phone,
-			"nama_pemohon":     namaPemohon,
-			"jenis_permohonan": jenisPermohonan,
-			"ppat":             ppat,
-			"created_at":       createdAt,
-			"created_by":       createdBy,
-			"updated_at":       updatedAt,
-			"updated_by":       updatedBy,
-			"created_by_nama":  createdByNama,
-			"updated_by_nama":  updatedByNama,
+			"id":                   id,
+			"dikuasakan":           dikuasakan,
+			"nama_kuasa":           namaKuasa,
+			"nomor_berkas":         nomorBerkas,
+			"phone":                phone,
+			"nama_pemohon":         namaPemohon,
+			"jenis_permohonan":     jenisPermohonan,
+			"ppat":                 ppat,
+			"created_at":           createdAt,
+			"created_by":           createdBy,
+			"updated_at":           updatedAt,
+			"updated_by":           updatedBy,
+			"created_by_nama":      createdByNama,
+			"updated_by_nama":      updatedByNama,
+			"nama_penyerah_berkas": namaPenyerahBerkas,
+			"nomor_hak":            nomorHak,
+			"jenis_hak":            jenisHak,
+			"kecamatan":            kecamatan,
+			"kelurahan":            kelurahan,
 		})
 	}
 
@@ -435,7 +474,12 @@ func (m *PostgresDBRepo) GetPermohonanByID(id string) (map[string]interface{}, e
 			COALESCE(p.updated_at, '2000-01-01 00:00:00') AS updated_at,
 			COALESCE(p.updated_by, '') AS updated_by,
 			COALESCE(u1.nama, '') AS created_by_name,
-			COALESCE(u2.nama, '') AS updated_by_name
+			COALESCE(u2.nama, '') AS updated_by_name,
+			COALESCE(p.nama_penyerah_berkas, '') AS nama_penyerah_berkas,
+			COALESCE(p.nomor_hak, '') AS nomor_hak,
+			COALESCE(p.jenis_hak, '') AS jenis_hak,
+			COALESCE(p.kecamatan, '') AS kecamatan,
+			COALESCE(p.kelurahan, '') AS kelurahan
 		FROM app.permohonan p
 		LEFT JOIN public.users u1 ON p.created_by::uuid = u1.id::uuid
 			LEFT JOIN public.users u2 ON p.updated_by::uuid = u2.id::uuid
@@ -443,7 +487,8 @@ func (m *PostgresDBRepo) GetPermohonanByID(id string) (map[string]interface{}, e
 
 	row := m.DB.QueryRowContext(ctx, query, id)
 
-	var permohonanID, namaKuasa, nomorBerkas, phone, namaPemohon, jenisPermohonan, ppat, createdBy, updatedBy, createdByNama, updatedByNama string
+	var permohonanID, namaKuasa, nomorBerkas, phone, namaPemohon, jenisPermohonan, ppat, createdBy, updatedBy, createdByNama, updatedByNama,
+		namaPenyerahBerkas, nomorHak, jenisHak, kecamatan, kelurahan string
 	var dikuasakan bool
 	var createdAt, updatedAt time.Time
 
@@ -462,26 +507,36 @@ func (m *PostgresDBRepo) GetPermohonanByID(id string) (map[string]interface{}, e
 		&updatedBy,
 		&createdByNama,
 		&updatedByNama,
+		&namaPenyerahBerkas,
+		&nomorHak,
+		&jenisHak,
+		&kecamatan,
+		&kelurahan,
 	)
 	if err != nil {
 		return nil, err
 	}
 
 	return map[string]interface{}{
-		"id":               permohonanID,
-		"dikuasakan":       dikuasakan,
-		"nama_kuasa":       namaKuasa,
-		"nomor_berkas":     nomorBerkas,
-		"phone":            phone,
-		"nama_pemohon":     namaPemohon,
-		"jenis_permohonan": jenisPermohonan,
-		"ppat":             ppat,
-		"created_at":       createdAt,
-		"created_by":       createdBy,
-		"updated_at":       updatedAt,
-		"updated_by":       updatedBy,
-		"created_by_nama":  createdByNama,
-		"updated_by_nama":  updatedByNama,
+		"id":                   permohonanID,
+		"dikuasakan":           dikuasakan,
+		"nama_kuasa":           namaKuasa,
+		"nomor_berkas":         nomorBerkas,
+		"phone":                phone,
+		"nama_pemohon":         namaPemohon,
+		"jenis_permohonan":     jenisPermohonan,
+		"ppat":                 ppat,
+		"created_at":           createdAt,
+		"created_by":           createdBy,
+		"updated_at":           updatedAt,
+		"updated_by":           updatedBy,
+		"created_by_nama":      createdByNama,
+		"updated_by_nama":      updatedByNama,
+		"nama_penyerah_berkas": namaPenyerahBerkas,
+		"nomor_hak":            nomorHak,
+		"jenis_hak":            jenisHak,
+		"kecamatan":            kecamatan,
+		"kelurahan":            kelurahan,
 	}, nil
 }
 
@@ -498,8 +553,13 @@ func (m *PostgresDBRepo) UpdatePermohonanByID(id string, data map[string]interfa
 			jenis_permohonan = COALESCE($6, jenis_permohonan),
 			ppat = COALESCE($7, ppat),
 			updated_at = COALESCE($8, updated_at),
-			updated_by = COALESCE($9, updated_by)
-		WHERE id = $10`
+			updated_by = COALESCE($9, updated_by),
+			nama_penyerah_berkas = COALESCE($10, nama_penyerah_berkas),
+			nomor_hak = COALESCE($11, nomor_hak),
+			jenis_hak = COALESCE($12, jenis_hak),
+			kecamatan = COALESCE($13, kecamatan),
+			kelurahan = COALESCE($14, kelurahan)
+		WHERE id = $15`
 
 	_, err := m.DB.ExecContext(context.Background(), query,
 		data["dikuasakan"],
@@ -511,6 +571,11 @@ func (m *PostgresDBRepo) UpdatePermohonanByID(id string, data map[string]interfa
 		data["ppat"],
 		data["updated_at"],
 		data["updated_by"],
+		data["nama_penyerah_berkas"],
+		data["nomor_hak"],
+		data["jenis_hak"],
+		data["kecamatan"],
+		data["kelurahan"],
 		id,
 	)
 
@@ -1601,6 +1666,11 @@ func (m *PostgresDBRepo) GetFilteredPermohonanRecords(filter string, limit int) 
 		OR COALESCE(p.created_by, '') ILIKE '%' || $1 || '%'
 		OR COALESCE(u1.nama, '') ILIKE '%' || $1 || '%'
 		OR COALESCE(u2.nama, '') ILIKE '%' || $1 || '%'
+		OR COALESCE(p.nama_penyerah_berkas, '') ILIKE '%' || $1 || '%'
+		OR COALESCE(p.jenis_hak, '') ILIKE '%' || $1 || '%'
+		OR COALESCE(p.nomor_hak, '') ILIKE '%' || $1 || '%'
+		OR COALESCE(p.kecamatan, '') ILIKE '%' || $1 || '%'
+		OR COALESCE(p.kelurahan, '') ILIKE '%' || $1 || '%'
 	`
 
 	// Query dengan COALESCE
@@ -1618,7 +1688,12 @@ func (m *PostgresDBRepo) GetFilteredPermohonanRecords(filter string, limit int) 
 		COALESCE((p.updated_at AT TIME ZONE 'Asia/Jakarta')::TEXT, '') AS updated_at,
 		COALESCE(p.updated_by, '') AS updated_by,
 		COALESCE(u1.nama, '') AS created_by_nama,
-		COALESCE(u2.nama, '') AS updated_by_nama
+		COALESCE(u2.nama, '') AS updated_by_nama,
+		COALESCE(p.nama_penyerah_berkas, '') AS nama_penyerah_berkas,
+		COALESCE(p.jenis_hak, '') AS jenis_hak,
+		COALESCE(p.nomor_hak, '') AS nomor_hak,
+		COALESCE(p.kecamatan, '') AS kecamatan,
+		COALESCE(p.kelurahan, '') AS kelurahan
 	`
 
 	if filter != "" {
@@ -1679,7 +1754,8 @@ func (m *PostgresDBRepo) GetFilteredPermohonanRecords(filter string, limit int) 
 			&record.ID, &record.Dikuasakan, &record.NamaKuasa, &record.NomorBerkas, &record.Phone,
 			&record.NamaPemohon, &record.JenisPermohonan, &record.PPAT, &record.CreatedAt,
 			&record.CreatedBy, &record.UpdatedAt, &record.UpdatedBy, &record.CreatedByNama,
-			&record.UpdatedByNama,
+			&record.UpdatedByNama, &record.NamaPenyerahBerkas, &record.JenisHak, &record.NomorHak,
+			&record.Kecamatan, &record.Kelurahan,
 		)
 		if err != nil {
 			return nil, err

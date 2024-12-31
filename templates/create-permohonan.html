@@ -140,7 +140,10 @@
 
         <form class="ui form" method="POST" action="/permohonan/create">
             {{ .Data.csrfField }}
-            <div class="two fields">
+
+            <!-- Informasi Kuasa -->
+            <h4 class="ui dividing header">Informasi Kuasa</h4>
+            <div class="three fields">
                 <div class="field">
                     <div class="ui checkbox">
                         <input type="checkbox" id="dikuasakan" name="dikuasakan">
@@ -151,37 +154,69 @@
                     <label>Nama Kuasa</label>
                     <input type="text" id="nama_kuasa" name="nama_kuasa" placeholder="Masukkan nama kuasa" disabled>
                 </div>
+                <div class="field">
+                    <label>Notaris/PPAT</label>
+                    <input type="text" name="ppat" placeholder="Masukkan Nama Notaris/PPAT" required>
+                </div>
             </div>
 
+            <!-- Informasi Pemohon -->
+            <h4 class="ui dividing header">Informasi Pemohon/Subyek Hak</h4>
             <div class="two fields">
                 <div class="field">
                     <label>Nama Pemohon</label>
                     <input type="text" name="nama_pemohon" placeholder="Masukkan nama pemohon" required>
                 </div>
                 <div class="field">
-                    <label>Nomor Berkas</label>
-                    <input type="text" name="nomor_berkas" placeholder="Masukkan nomor berkas" required>
+                    <label>Telepon</label>
+                    <input type="text" name="phone" placeholder="Masukkan nomor telepon" required>
                 </div>
             </div>
 
-            <div class="two fields">
+            <!-- Informasi Berkas -->
+            <h4 class="ui dividing header">Informasi Permohonan/Obyek Hak</h4>
+            <div class="three fields">
                 <div class="field">
                     <label>Jenis Permohonan</label>
                     <input type="text" name="jenis_permohonan" placeholder="Masukkan jenis permohonan" required>
                 </div>
                 <div class="field">
-                    <label>PPAT</label>
-                    <input type="text" name="ppat" placeholder="Masukkan PPAT">
+                    <label>Nomor Berkas</label>
+                    <input type="text" name="nomor_berkas" placeholder="Masukkan nomor berkas" required>
+                </div>
+                <div class="field">
+                    <label>Nama yang Menyerahkan Berkas</label>
+                    <input type="text" name="nama_penyerah_berkas" placeholder="Masukkan nama yang menyerahkan berkas"
+                           required>
                 </div>
             </div>
 
             <div class="two fields">
                 <div class="field">
-                    <label>Telepon</label>
-                    <input type="text" name="phone" placeholder="Masukkan nomor telepon">
+                    <label>Jenis Hak</label>
+                    <input type="text" name="jenis_hak"
+                           placeholder="Masukkan jenis hak. Contoh: tanah adat, shm, hgb, hp, wakaf, satuan hak rumah susun"
+                           required>
+                </div>
+                <div class="field">
+                    <label>Nomor Hak</label>
+                    <input type="text" name="nomor_hak" placeholder="Masukkan nomor hak" required>
                 </div>
             </div>
 
+            <div class="two fields">
+                <div class="field">
+                    <label>Kecamatan</label>
+                    <input type="text" name="kecamatan" placeholder="Masukkan kecamatan" required>
+                </div>
+
+                <div class="field">
+                    <label>Kelurahan</label>
+                    <input type="text" name="kelurahan" placeholder="Masukkan kelurahan" required>
+                </div>
+            </div>
+
+            <!-- Tombol Aksi -->
             <div class="ui divider"></div>
             <button class="ui primary small labeled icon button" type="submit">
                 <i class="save icon"></i> Simpan Permohonan

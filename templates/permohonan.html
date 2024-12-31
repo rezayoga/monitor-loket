@@ -355,6 +355,26 @@
                         <td>{{highlightText $permohonan.ppat $search}}</td>
                     </tr>
                     <tr>
+                        <td>Nama Penyerah Berkas</td>
+                        <td>{{highlightText $permohonan.nama_penyerah_berkas $search}}</td>
+                    </tr>
+                    <tr>
+                        <td>Jenis Hak</td>
+                        <td>{{highlightText $permohonan.jenis_hak $search}}</td>
+                    </tr>
+                    <tr>
+                        <td>Nomor Hak</td>
+                        <td>{{highlightText $permohonan.nomor_hak $search}}</td>
+                    </tr>
+                    <tr>
+                        <td>Kecamatan</td>
+                        <td>{{highlightText $permohonan.kecamatan $search}}</td>
+                    </tr>
+                    <tr>
+                        <td>Kelurahan</td>
+                        <td>{{highlightText $permohonan.kelurahan $search}}</td>
+                    </tr>
+                    <tr>
                         <td>Dibuat Tanggal</td>
                         <td><span class="ui tag label">{{highlightText ($permohonan.created_at | formatTime | convertTimestamp) $search}}</span>
                         </td>
@@ -438,7 +458,7 @@
     <div id="delete-modal" class="ui small modal">
         <div class="header">Konfirmasi Penghapusan</div>
         <div class="content" style="text-align: left;">
-            <p>Apakah Anda yakin ingin menghapus permohonan dengan nomor hak <strong id="record-name"></strong>?</p>
+            <p>Apakah Anda yakin ingin menghapus permohonan dengan nomor berkas <strong id="record-name"></strong>?</p>
             <p>Data ini akan dihapus secara permanen dan tidak dapat dikembalikan.</p>
         </div>
         <div class="actions">

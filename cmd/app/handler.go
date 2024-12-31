@@ -746,13 +746,18 @@ func (app *application) createPermohonan(w http.ResponseWriter, r *http.Request)
 
 		// Ambil input form
 		record := map[string]interface{}{
-			"dikuasakan":       r.FormValue("dikuasakan") == "on", // Checkbox
-			"nama_kuasa":       r.FormValue("nama_kuasa"),
-			"nomor_berkas":     r.FormValue("nomor_berkas"),
-			"phone":            r.FormValue("phone"),
-			"nama_pemohon":     r.FormValue("nama_pemohon"),
-			"jenis_permohonan": r.FormValue("jenis_permohonan"),
-			"ppat":             r.FormValue("ppat"),
+			"dikuasakan":           r.FormValue("dikuasakan") == "on", // Checkbox
+			"nama_kuasa":           r.FormValue("nama_kuasa"),
+			"nomor_berkas":         r.FormValue("nomor_berkas"),
+			"phone":                r.FormValue("phone"),
+			"nama_pemohon":         r.FormValue("nama_pemohon"),
+			"jenis_permohonan":     r.FormValue("jenis_permohonan"),
+			"ppat":                 r.FormValue("ppat"),
+			"nama_penyerah_berkas": r.FormValue("nama_penyerah_berkas"),
+			"nomor_hak":            r.FormValue("nomor_hak"),
+			"jenis_hak":            r.FormValue("jenis_hak"),
+			"kecamatan":            r.FormValue("kecamatan"),
+			"kelurahan":            r.FormValue("kelurahan"),
 			//"created_by":       fmt.Sprintf("%s (%s)", session.Values["user.email"], session.Values["user.nama"]),
 			"created_by": session.Values["user.id"].(string),
 		}
@@ -1951,7 +1956,8 @@ func (app *application) generateExcel(records []models.PermohonanRecord) (*excel
 	// Header Tabel
 	headers := []string{
 		"Dikuasakan", "Nama Kuasa", "Nomor Berkas", "Telepon", "Nama Pemohon", "Jenis Permohonan",
-		"PPAT", "Dibuat Tanggal", "Dibuat Oleh", "Diperbarui Tanggal", "Diperbarui Oleh",
+		"PPAT", "Nama Penyerah Berkas", "Jenis Hak", "Nomor Hak", "Kecamatan", "Kelurahan",
+		"Dibuat Tanggal", "Dibuat Oleh", "Diperbarui Tanggal", "Diperbarui Oleh",
 	}
 
 	// Tambahkan Header ke Excel
@@ -1972,10 +1978,15 @@ func (app *application) generateExcel(records []models.PermohonanRecord) (*excel
 		f.SetCellValue(sheetName, excelColumnName(5)+row, record.NamaPemohon)
 		f.SetCellValue(sheetName, excelColumnName(6)+row, record.JenisPermohonan)
 		f.SetCellValue(sheetName, excelColumnName(7)+row, record.PPAT)
-		f.SetCellValue(sheetName, excelColumnName(8)+row, record.CreatedAt)
-		f.SetCellValue(sheetName, excelColumnName(9)+row, record.CreatedByNama)
-		f.SetCellValue(sheetName, excelColumnName(10)+row, record.UpdatedAt)
-		f.SetCellValue(sheetName, excelColumnName(11)+row, record.UpdatedByNama)
+		f.SetCellValue(sheetName, excelColumnName(8)+row, record.NamaPenyerahBerkas)
+		f.SetCellValue(sheetName, excelColumnName(9)+row, record.JenisHak)
+		f.SetCellValue(sheetName, excelColumnName(10)+row, record.NomorHak)
+		f.SetCellValue(sheetName, excelColumnName(11)+row, record.Kecamatan)
+		f.SetCellValue(sheetName, excelColumnName(12)+row, record.Kelurahan)
+		f.SetCellValue(sheetName, excelColumnName(13)+row, record.CreatedAt)
+		f.SetCellValue(sheetName, excelColumnName(14)+row, record.CreatedByNama)
+		f.SetCellValue(sheetName, excelColumnName(15)+row, record.UpdatedAt)
+		f.SetCellValue(sheetName, excelColumnName(16)+row, record.UpdatedByNama)
 	}
 
 	// Atur kolom agar auto-fit
