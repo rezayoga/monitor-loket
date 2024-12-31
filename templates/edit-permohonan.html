@@ -191,9 +191,52 @@
             <div class="three fields">
                 <div class="field">
                     <label>Jenis Permohonan</label>
-                    <input type="text" name="jenis_permohonan" placeholder="Masukkan jenis permohonan"
-                           value="{{.Data.KeyPermohonan.jenis_permohonan}}" required>
+                    <select class="ui search dropdown" name="jenis_permohonan" required>
+                        <option value="">Pilih jenis permohonan</option>
+                        <option value="Alih Media Sertipikat Elektronik" {{if eq .Data.KeyPermohonan.jenis_permohonan "Alih Media Sertipikat Elektronik"}}selected{{end}}>Alih Media Sertipikat Elektronik</option>
+                        <option value="Blokir" {{if eq .Data.KeyPermohonan.jenis_permohonan "Blokir"}}selected{{end}}>Blokir</option>
+                        <option value="Cessie" {{if eq .Data.KeyPermohonan.jenis_permohonan "Cessie"}}selected{{end}}>Cessie</option>
+                        <option value="Ganti Nadzir" {{if eq .Data.KeyPermohonan.jenis_permohonan "Ganti Nadzir"}}selected{{end}}>Ganti Nadzir</option>
+                        <option value="Ganti Nama" {{if eq .Data.KeyPermohonan.jenis_permohonan "Ganti Nama"}}selected{{end}}>Ganti Nama</option>
+                        <option value="Ganti Nama Pemegang Hak Tanggungan" {{if eq .Data.KeyPermohonan.jenis_permohonan "Ganti Nama Pemegang Hak Tanggungan"}}selected{{end}}>Ganti Nama Pemegang Hak Tanggungan</option>
+                        <option value="Hapusnya Hak" {{if eq .Data.KeyPermohonan.jenis_permohonan "Hapusnya Hak"}}selected{{end}}>Hapusnya Hak</option>
+                        <option value="Hapusnya Hak Tanggungan Karena Hak Berakhir" {{if eq .Data.KeyPermohonan.jenis_permohonan "Hapusnya Hak Tanggungan Karena Hak Berakhir"}}selected{{end}}>Hapusnya Hak Tanggungan Karena Hak Berakhir</option>
+                        <option value="Merger Hak Tanggungan" {{if eq .Data.KeyPermohonan.jenis_permohonan "Merger Hak Tanggungan"}}selected{{end}}>Merger Hak Tanggungan</option>
+                        <option value="Pelantikan PPAT" {{if eq .Data.KeyPermohonan.jenis_permohonan "Pelantikan PPAT"}}selected{{end}}>Pelantikan PPAT</option>
+                        <option value="Pelayanan Pencatatan Pembatalan Peralihan Hak" {{if eq .Data.KeyPermohonan.jenis_permohonan "Pelayanan Pencatatan Pembatalan Peralihan Hak"}}selected{{end}}>Pelayanan Pencatatan Pembatalan Peralihan Hak</option>
+                        <option value="Pemecahan Bidang" {{if eq .Data.KeyPermohonan.jenis_permohonan "Pemecahan Bidang"}}selected{{end}}>Pemecahan Bidang</option>
+                        <option value="Pemisahan Bidang" {{if eq .Data.KeyPermohonan.jenis_permohonan "Pemisahan Bidang"}}selected{{end}}>Pemisahan Bidang</option>
+                        <option value="Penataan Batas" {{if eq .Data.KeyPermohonan.jenis_permohonan "Penataan Batas"}}selected{{end}}>Penataan Batas</option>
+                        <option value="Pencatatan Pelunasan BPHTB/PPH" {{if eq .Data.KeyPermohonan.jenis_permohonan "Pencatatan Pelunasan BPHTB/PPH"}}selected{{end}}>Pencatatan Pelunasan BPHTB/PPH</option>
+                        <option value="Pencatatan Perpanjangan Hak Bersama Pada Hak Milik Atas Satuan Rumah Susun" {{if eq .Data.KeyPermohonan.jenis_permohonan "Pencatatan Perpanjangan Hak Bersama Pada Hak Milik Atas Satuan Rumah Susun"}}selected{{end}}>Pencatatan Perpanjangan Hak Bersama Pada Hak Milik Atas Satuan Rumah Susun</option>
+                        <option value="Pencetakan Sertipikat" {{if eq .Data.KeyPermohonan.jenis_permohonan "Pencetakan Sertipikat"}}selected{{end}}>Pencetakan Sertipikat</option>
+                        <option value="Pendaftaran SK Hak" {{if eq .Data.KeyPermohonan.jenis_permohonan "Pendaftaran SK Hak"}}selected{{end}}>Pendaftaran SK Hak</option>
+                        <option value="Pendaftaran SK Perpanjangan/Pembaruan Hak" {{if eq .Data.KeyPermohonan.jenis_permohonan "Pendaftaran SK Perpanjangan/Pembaruan Hak"}}selected{{end}}>Pendaftaran SK Perpanjangan/Pembaruan Hak</option>
+                        <option value="Pendaftaran Tanah Pertama Kali Penegasan Tanah Wakaf" {{if eq .Data.KeyPermohonan.jenis_permohonan "Pendaftaran Tanah Pertama Kali Penegasan Tanah Wakaf"}}selected{{end}}>Pendaftaran Tanah Pertama Kali Penegasan Tanah Wakaf</option>
+                        <option value="Pendaftaran Tanah Pertama Kali Pengakuan/Penegasan Hak" {{if eq .Data.KeyPermohonan.jenis_permohonan "Pendaftaran Tanah Pertama Kali Pengakuan/Penegasan Hak"}}selected{{end}}>Pendaftaran Tanah Pertama Kali Pengakuan/Penegasan Hak</option>
+                        <option value="Pendaftaran Tanah Pertama Kali Wakaf untuk Tanah Yang Belum Sertipikat (Tanah Adat)" {{if eq .Data.KeyPermohonan.jenis_permohonan "Pendaftaran Tanah Pertama Kali Wakaf untuk Tanah Yang Belum Sertipikat (Tanah Adat)"}}selected{{end}}>Pendaftaran Tanah Pertama Kali Wakaf untuk Tanah Yang Belum Sertipikat (Tanah Adat)</option>
+                        <option value="Pendaftaran Tanah Pertama Kali Wakaf untuk Tanah Yang Belum Sertipikat (Tanah Negara)" {{if eq .Data.KeyPermohonan.jenis_permohonan "Pendaftaran Tanah Pertama Kali Wakaf untuk Tanah Yang Belum Sertipikat (Tanah Negara)"}}selected{{end}}>Pendaftaran Tanah Pertama Kali Wakaf untuk Tanah Yang Belum Sertipikat (Tanah Negara)</option>
+                        <option value="Pengangkatan Sita" {{if eq .Data.KeyPermohonan.jenis_permohonan "Pengangkatan Sita"}}selected{{end}}>Pengangkatan Sita</option>
+                        <option value="Pengembalian Batas" {{if eq .Data.KeyPermohonan.jenis_permohonan "Pengembalian Batas"}}selected{{end}}>Pengembalian Batas</option>
+                        <option value="Penggabungan Bidang" {{if eq .Data.KeyPermohonan.jenis_permohonan "Penggabungan Bidang"}}selected{{end}}>Penggabungan Bidang</option>
+                        <option value="Pengukuran Dan Pemetaan Kadastral" {{if eq .Data.KeyPermohonan.jenis_permohonan "Pengukuran Dan Pemetaan Kadastral"}}selected{{end}}>Pengukuran Dan Pemetaan Kadastral</option>
+                        <option value="Pengukuran Ulang Dan Pemetaan Kadastral" {{if eq .Data.KeyPermohonan.jenis_permohonan "Pengukuran Ulang Dan Pemetaan Kadastral"}}selected{{end}}>Pengukuran Ulang Dan Pemetaan Kadastral</option>
+                        <option value="Peralihan Hak - Hibah" {{if eq .Data.KeyPermohonan.jenis_permohonan "Peralihan Hak - Hibah"}}selected{{end}}>Peralihan Hak - Hibah</option>
+                        <option value="Peralihan Hak - Jual Beli" {{if eq .Data.KeyPermohonan.jenis_permohonan "Peralihan Hak - Jual Beli"}}selected{{end}}>Peralihan Hak - Jual Beli</option>
+                        <option value="Peralihan Hak - Jual Beli HGB Badan Hukum" {{if eq .Data.KeyPermohonan.jenis_permohonan "Peralihan Hak - Jual Beli HGB Badan Hukum"}}selected{{end}}>Peralihan Hak - Jual Beli HGB Badan Hukum</option>
+                        <option value="Perubahan Hak Atas Tanah" {{if eq .Data.KeyPermohonan.jenis_permohonan "Perubahan Hak Atas Tanah"}}selected{{end}}>Perubahan Hak Atas Tanah</option>
+                        <option value="Roya" {{if eq .Data.KeyPermohonan.jenis_permohonan "Roya"}}selected{{end}}>Roya</option>
+                        <option value="Roya Elektronik Perorangan" {{if eq .Data.KeyPermohonan.jenis_permohonan "Roya Elektronik Perorangan"}}selected{{end}}>Roya Elektronik Perorangan</option>
+                        <option value="Sertipikat Pengganti Karena Blanko Lama" {{if eq .Data.KeyPermohonan.jenis_permohonan "Sertipikat Pengganti Karena Blanko Lama"}}selected{{end}}>Sertipikat Pengganti Karena Blanko Lama</option>
+                        <option value="Sertipikat Pengganti Karena Hilang" {{if eq .Data.KeyPermohonan.jenis_permohonan "Sertipikat Pengganti Karena Hilang"}}selected{{end}}>Sertipikat Pengganti Karena Hilang</option>
+                        <option value="Sertipikat Pengganti Karena Rusak" {{if eq .Data.KeyPermohonan.jenis_permohonan "Sertipikat Pengganti Karena Rusak"}}selected{{end}}>Sertipikat Pengganti Karena Rusak</option>
+                        <option value="Sita" {{if eq .Data.KeyPermohonan.jenis_permohonan "Sita"}}selected{{end}}>Sita</option>
+                        <option value="Subrogasi" {{if eq .Data.KeyPermohonan.jenis_permohonan "Subrogasi"}}selected{{end}}>Subrogasi</option>
+                        <option value="Surat Keterangan Pendaftaran Tanah" {{if eq .Data.KeyPermohonan.jenis_permohonan "Surat Keterangan Pendaftaran Tanah"}}selected{{end}}>Surat Keterangan Pendaftaran Tanah</option>
+                        <option value="Wakaf dari Tanah Yang Sudah Bersertipikat" {{if eq .Data.KeyPermohonan.jenis_permohonan "Wakaf dari Tanah Yang Sudah Bersertipikat"}}selected{{end}}>Wakaf dari Tanah Yang Sudah Bersertipikat</option>
+                    </select>
                 </div>
+
                 <div class="field">
                     <label>Nomor Berkas</label>
                     <input type="text" name="nomor_berkas" placeholder="Masukkan nomor berkas"
@@ -223,13 +266,30 @@
             <div class="two fields">
                 <div class="field">
                     <label>Kecamatan</label>
-                    <input type="text" name="kecamatan" placeholder="Masukkan kecamatan"
-                           value="{{.Data.KeyPermohonan.kecamatan}}" required>
+                    <select id="kecamatan" class="ui search dropdown" name="kecamatan" required>
+                        <option value="">Pilih Kecamatan</option>
+                        <option value="RUNGKUT" {{if eq .Data.KeyPermohonan.kecamatan "RUNGKUT"}}selected{{end}}>RUNGKUT</option>
+                        <option value="GENTENG" {{if eq .Data.KeyPermohonan.kecamatan "GENTENG"}}selected{{end}}>GENTENG</option>
+                        <option value="GUBENG" {{if eq .Data.KeyPermohonan.kecamatan "GUBENG"}}selected{{end}}>GUBENG</option>
+                        <option value="SUKOLILO" {{if eq .Data.KeyPermohonan.kecamatan "SUKOLILO"}}selected{{end}}>SUKOLILO</option>
+                        <option value="TAMBAKSARI" {{if eq .Data.KeyPermohonan.kecamatan "TAMBAKSARI"}}selected{{end}}>TAMBAKSARI</option>
+                        <option value="SIMOKERTO" {{if eq .Data.KeyPermohonan.kecamatan "SIMOKERTO"}}selected{{end}}>SIMOKERTO</option>
+                        <option value="PABEAN CANTIAN" {{if eq .Data.KeyPermohonan.kecamatan "PABEAN CANTIAN"}}selected{{end}}>PABEAN CANTIAN</option>
+                        <option value="BUBUTAN" {{if eq .Data.KeyPermohonan.kecamatan "BUBUTAN"}}selected{{end}}>BUBUTAN</option>
+                        <option value="KREMBANGAN" {{if eq .Data.KeyPermohonan.kecamatan "KREMBANGAN"}}selected{{end}}>KREMBANGAN</option>
+                        <option value="SEMAMPIR" {{if eq .Data.KeyPermohonan.kecamatan "SEMAMPIR"}}selected{{end}}>SEMAMPIR</option>
+                        <option value="KENJERAN" {{if eq .Data.KeyPermohonan.kecamatan "KENJERAN"}}selected{{end}}>KENJERAN</option>
+                        <option value="TENGGILIS MEJOYO" {{if eq .Data.KeyPermohonan.kecamatan "TENGGILIS MEJOYO"}}selected{{end}}>TENGGILIS MEJOYO</option>
+                        <option value="GUNUNGANYAR" {{if eq .Data.KeyPermohonan.kecamatan "GUNUNGANYAR"}}selected{{end}}>GUNUNGANYAR</option>
+                        <option value="MULYOREJO" {{if eq .Data.KeyPermohonan.kecamatan "MULYOREJO"}}selected{{end}}>MULYOREJO</option>
+                        <option value="BULAK" {{if eq .Data.KeyPermohonan.kecamatan "BULAK"}}selected{{end}}>BULAK</option>
+                    </select>
                 </div>
                 <div class="field">
                     <label>Kelurahan</label>
-                    <input type="text" name="kelurahan" placeholder="Masukkan kelurahan"
-                           value="{{.Data.KeyPermohonan.kelurahan}}" required>
+                    <select id="kelurahan" class="ui search dropdown" name="kelurahan" required>
+                        <option value="">Pilih Kelurahan</option>
+                    </select>
                 </div>
             </div>
 
@@ -344,5 +404,61 @@
 
     });
 </script>
+<script>
+    $(document).ready(function () {
+        // Kelurahan data grouped by Kecamatan
+        const kelurahanData = {
+            "RUNGKUT": ["Kelurahan MEDOKAN AYU", "Kelurahan RUNGKUT KIDUL", "Kelurahan KALI RUNGKUT", "Kelurahan KEDUNG BARUK", "Kelurahan PENJARINGANSARI", "Kelurahan WONOREJO"],
+            "GENTENG": ["Kelurahan EMBONG KALIASIN", "Kelurahan KETABANG", "Kelurahan GENTENG", "Kelurahan PENELEH", "Kelurahan KAPASARI", "Kelurahan Lingkungan Genteng", "Kelurahan Lingkungan Embongkaliasin", "Kelurahan Lingkungan Ketabang", "Kelurahan Lingkungan Peneleh"],
+            "GUBENG": ["Kelurahan BARATAJAYA", "Kelurahan PUCANGSEWU", "Kelurahan KERTAJAYA", "Kelurahan GUBENG", "Kelurahan AIRLANGGA", "Kelurahan MOJO", "Kelurahan Lingkungan Gubeng", "Kelurahan Lingkungan Pacarkembang"],
+            "SUKOLILO": ["Kelurahan NGINDENJANGKUNGAN", "Kelurahan SEMOLOWARU", "Kelurahan MEDOKAN SEMAMPIR", "Kelurahan KEPUTIH", "Kelurahan KLAMPIS NGASEM", "Kelurahan MENUR PUMPUNGAN", "Kelurahan GEBANG PUTIH", "Kelurahan Lingkungan Manyarsabrangan"],
+            "TAMBAKSARI": ["Kelurahan PACARKEMBANG", "Kelurahan PACARKELING", "Kelurahan TAMBAKSARI", "Kelurahan PLOSO", "Kelurahan RANGKAH", "Kelurahan GADING", "Kelurahan Lingkungan Tambaksari", "Kelurahan Lingkungan Kapasari", "Kelurahan Lingkungan Rangkah", "Kelurahan KAPAS MADYA BARU", "Kelurahan DUKUH SETRO"],
+            "SIMOKERTO": ["Kelurahan KAPASAN", "Kelurahan TAMBAKREJO", "Kelurahan SIMOKERTO", "Kelurahan SIDODADI", "Kelurahan SIMOLAWANG", "Kelurahan Lingkungan Simokerto", "Kelurahan Lingkungan Kapasan", "Kelurahan Lingkungan Sidodadi", "Kelurahan Lingkungan Sidokapasan"],
+            "PABEAN CANTIAN": ["Kelurahan BONGKARAN", "Kelurahan NYAMPLUNGAN", "Kelurahan KREMBANGAN UTARA", "Kelurahan PERAK TIMUR", "Kelurahan PERAK UTARA", "Kelurahan Lingkungan Pabean Cantikan", "Kelurahan Lingkungan Bongkaran", "Kelurahan Lingkungan Ampel", "Kelurahan Lingkungan Srengganan", "Kelurahan TANJUNG PERAK"],
+            "BUBUTAN": ["Kelurahan BUBUTAN", "Kelurahan ALUN-ALUN CONTONG", "Kelurahan TEMBOK DUKUH", "Kelurahan GUNDIH", "Kelurahan JEPARA", "Kelurahan Lingkungan Bubutan", "Kelurahan Lingkungan Alun-alun Contong", "Kelurahan Lingkungan Jagalan", "Kelurahan Lingkungan Tembok Dukuh"],
+            "KREMBANGAN": ["Kelurahan DUPAK", "Kelurahan MOROKREMBANGAN", "Kelurahan PERAK BARAT", "Kelurahan KEMAYORAN", "Kelurahan KREMBANGAN SELATAN", "Kelurahan Lingkungan Krembangan Utara", "Kelurahan Lingkungan Krembangan Selatan", "Kelurahan Lingkungan Tanjung Perak"],
+            "SEMAMPIR": ["Kelurahan AMPEL", "Kelurahan SIDOTOPO", "Kelurahan PEGIRIAN", "Kelurahan WONOKUSUMO", "Kelurahan UJUNG", "Kelurahan Lingkungan Semampir", "Kelurahan Lingkungan Kampungbaru", "Kelurahan Lingkungan Nyamplungan", "Kelurahan Lingkungan Ujung"],
+            "KENJERAN": ["Kelurahan SUKOLILO", "Kelurahan TANAH KALIKEDINDING", "Kelurahan SIDOTOPO WETAN", "Kelurahan BULAK BANTENG", "Kelurahan TAMBAK WEDI"],
+            "TENGGILIS MEJOYO": ["Kelurahan TENGGILIS MEJOYO", "Kelurahan PRAPEN", "Kelurahan PANJANGJIWO", "Kelurahan KENDANGSARI", "Kelurahan KUTISARI"],
+            "GUNUNGANYAR": ["Kelurahan GUNUNGANYAR", "Kelurahan RUNGKUT TENGAH", "Kelurahan RUNGKUT MENANGGAL", "Kelurahan GUNUNGANYAR TAMBAK"],
+            "MULYOREJO": ["Kelurahan MULYOREJO", "Kelurahan MANYAR SABRANGAN", "Kelurahan KEJAWAN PUTIH TAMBAK", "Kelurahan KALISARI", "Kelurahan DUKUH SUTOREJO", "Kelurahan KALIJUDAN"],
+            "BULAK": ["Kelurahan BULAK", "Kelurahan KEDUNG COWEK", "Kelurahan KOMPLEK KENJERAN", "Kelurahan KENJERAN", "Kelurahan SUKOLILO", "Kelurahan SUKOLILO BARU"]
+        };
+
+        const initialKecamatan = "{{.Data.KeyPermohonan.kecamatan}}";
+        const initialKelurahan = "{{.Data.KeyPermohonan.kelurahan}}";
+
+        // Populate Kelurahan dropdown
+        function populateKelurahan(kecamatan, kelurahanDropdown, selectedKelurahan) {
+            kelurahanDropdown.empty();
+            kelurahanDropdown.append('<option value="">Pilih Kelurahan</option>');
+
+            if (kelurahanData[kecamatan]) {
+                kelurahanData[kecamatan].forEach(function (kelurahan) {
+                    kelurahanDropdown.append(
+                        `<option value="${kelurahan}" ${kelurahan === selectedKelurahan ? 'selected' : ''}>${kelurahan}</option>`
+                    );
+                });
+
+                // Refresh Semantic UI dropdown
+                kelurahanDropdown.dropdown('refresh');
+            }
+        }
+
+        const kelurahanDropdown = $('#kelurahan');
+
+        // Populate Kelurahan on page load if Kecamatan is set
+        if (initialKecamatan) {
+            populateKelurahan(initialKecamatan, kelurahanDropdown, initialKelurahan);
+        }
+
+        // On Kecamatan change
+        $('#kecamatan').change(function () {
+            const selectedKecamatan = $(this).val();
+            populateKelurahan(selectedKecamatan, kelurahanDropdown, '');
+        });
+    });
+</script>
+
 </body>
 </html>
