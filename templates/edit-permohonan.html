@@ -174,12 +174,12 @@
             <!-- Informasi Pemohon -->
             <h4 class="ui dividing header">Informasi Pemohon/Subyek Hak</h4>
             <div class="two fields">
-                <div class="field">
+                <div class="field required">
                     <label>Nama Pemohon</label>
                     <input type="text" name="nama_pemohon" placeholder="Masukkan nama pemohon"
                            value="{{.Data.KeyPermohonan.nama_pemohon}}" required>
                 </div>
-                <div class="field">
+                <div class="field required">
                     <label>Telepon</label>
                     <input type="text" name="phone" placeholder="Masukkan nomor telepon"
                            value="{{.Data.KeyPermohonan.phone}}" required>
@@ -189,7 +189,7 @@
             <!-- Informasi Berkas -->
             <h4 class="ui dividing header">Informasi Permohonan/Obyek Hak</h4>
             <div class="three fields">
-                <div class="field">
+                <div class="field required">
                     <label>Jenis Permohonan</label>
                     <select class="ui search dropdown" name="jenis_permohonan" required>
                         <option value="">Pilih jenis permohonan</option>
@@ -237,12 +237,12 @@
                     </select>
                 </div>
 
-                <div class="field">
+                <div class="field required">
                     <label>Nomor Berkas</label>
                     <input type="text" name="nomor_berkas" placeholder="Masukkan nomor berkas"
                            value="{{.Data.KeyPermohonan.nomor_berkas}}" required>
                 </div>
-                <div class="field">
+                <div class="field required">
                     <label>Nama yang Menyerahkan Berkas</label>
                     <input type="text" name="nama_penyerah_berkas" placeholder="Masukkan nama yang menyerahkan berkas"
                            value="{{.Data.KeyPermohonan.nama_penyerah_berkas}}" required>
@@ -250,12 +250,21 @@
             </div>
 
             <div class="two fields">
-                <div class="field">
+                <div class="field required">
                     <label>Jenis Hak</label>
-                    <input type="text" name="jenis_hak"
-                           placeholder="Masukkan jenis hak. Contoh: tanah adat, shm, hgb, hp, wakaf, satuan hak rumah susun"
-                           value="{{.Data.KeyPermohonan.jenis_hak}}" required>
+                    <select name="jenis_hak" class="ui search dropdown" required>
+                        <option value="" {{if eq .Data.KeyPermohonan.jenis_hak ""}}selected{{end}}>Pilih Jenis Hak</option>
+                        <option value="Sertipikat Hak Milik" {{if eq .Data.KeyPermohonan.jenis_hak "Sertipikat Hak Milik"}}selected{{end}}>Sertipikat Hak Milik</option>
+                        <option value="Sertipikat Hak Guna Bangunan" {{if eq .Data.KeyPermohonan.jenis_hak "Sertipikat Hak Guna Bangunan"}}selected{{end}}>Sertipikat Hak Guna Bangunan</option>
+                        <option value="Sertipikat Hak Guna Usaha" {{if eq .Data.KeyPermohonan.jenis_hak "Sertipikat Hak Guna Usaha"}}selected{{end}}>Sertipikat Hak Guna Usaha</option>
+                        <option value="Sertipikat Hak Pengelolaan" {{if eq .Data.KeyPermohonan.jenis_hak "Sertipikat Hak Pengelolaan"}}selected{{end}}>Sertipikat Hak Pengelolaan</option>
+                        <option value="Sertipikat Hak Pakai" {{if eq .Data.KeyPermohonan.jenis_hak "Sertipikat Hak Pakai"}}selected{{end}}>Sertipikat Hak Pakai</option>
+                        <option value="Sertipikat Wakaf" {{if eq .Data.KeyPermohonan.jenis_hak "Sertipikat Wakaf"}}selected{{end}}>Sertipikat Wakaf</option>
+                        <option value="Tanah Adat" {{if eq .Data.KeyPermohonan.jenis_hak "Tanah Adat"}}selected{{end}}>Tanah Adat</option>
+                        <option value="Sertifikat Hak Milik atas Satuan Rumah Susun" {{if eq .Data.KeyPermohonan.jenis_hak "Sertifikat Hak Milik atas Satuan Rumah Susun"}}selected{{end}}>Sertifikat Hak Milik atas Satuan Rumah Susun</option>
+                    </select>
                 </div>
+
                 <div class="field">
                     <label>Nomor Hak</label>
                     <input type="text" name="nomor_hak" placeholder="Masukkan nomor hak"
@@ -264,7 +273,7 @@
             </div>
 
             <div class="two fields">
-                <div class="field">
+                <div class="field required">
                     <label>Kecamatan</label>
                     <select id="kecamatan" class="ui search dropdown" name="kecamatan" required>
                         <option value="">Pilih Kecamatan</option>
@@ -285,7 +294,7 @@
                         <option value="BULAK" {{if eq .Data.KeyPermohonan.kecamatan "BULAK"}}selected{{end}}>BULAK</option>
                     </select>
                 </div>
-                <div class="field">
+                <div class="field required">
                     <label>Kelurahan</label>
                     <select id="kelurahan" class="ui search dropdown" name="kelurahan" required>
                         <option value="">Pilih Kelurahan</option>
