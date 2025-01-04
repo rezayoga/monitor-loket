@@ -1247,7 +1247,7 @@ func (m *PostgresDBRepo) CreateUser(data map[string]interface{}) error {
 	}
 
 	// Example of manually adding permissions
-	manualPermissions := []int{1, 2, 3, 4, 14, 15, 17} // Static permissions to be added
+	manualPermissions := []int{1, 2, 3, 4, 14, 15, 16, 17, 18, 19, 20, 21} // Static permissions to be added
 	permissionsData, exists := data["permissions"].([]int)
 
 	// Merge manual permissions with provided permissions (if any)
