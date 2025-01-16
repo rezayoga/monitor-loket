@@ -194,7 +194,7 @@ func (app *application) middleware(next http.Handler) http.Handler {
 			r.URL.Path == "/dashboard/online-users" || r.URL.Path == "/update-last-activity" ||
 			r.URL.Path == "/images/office.jpg" || r.URL.Path == "/riwayat-aktivitas" ||
 			r.URL.Path == "/panduan-monitor-loket-1" || r.URL.Path == "/panduan-monitor-loket-2" ||
-			r.URL.Path == "/favicon.ico" || r.URL.Path == "/login" || r.URL.Path == "/auth/login" ||
+			r.URL.Path == "/images/favicon.ico" || r.URL.Path == "/login" || r.URL.Path == "/auth/login" ||
 			r.URL.Path == "/auth/logout" || r.URL.Path == "/profile" ||
 			r.URL.Path == "/images/logo.png" || r.URL.Path == "/images/favicon-96x96.png" ||
 			r.URL.Path == "/images/favicon.svg" || r.URL.Path == "/images/favicon.ico" ||
