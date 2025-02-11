@@ -37,7 +37,7 @@ func (app *application) routes() http.Handler {
 	// CSRF protection middleware
 	csrfMiddleware := csrf.Protect(
 		[]byte("szcSCmn6aBnU68z5mXmqAtpZWXs6V7KUiY/mJXOaMYU="), // Generate a secure key
-		csrf.Secure(true), // Use 'false' in development only, should be 'true' in production with HTTPS
+		csrf.Secure(true),                                      // Use 'false' in development only, should be 'true' in production with HTTPS
 	)
 
 	metaInfo := Meta{
@@ -143,10 +143,10 @@ func (app *application) routes() http.Handler {
 		r.Get("/permohonan/create", app.createPermohonan)
 		r.Get("/permohonan/delete/{id}", app.deletePermohonan)
 
-		// User CRUD
+		// Pengguna CRUD
 		r.Get("/user/edit/{id}", app.editUser)  // Untuk form edit user
 		r.Post("/user/edit/{id}", app.editUser) // Untuk submit perubahan
-		r.Get("/user/create", app.createUser)   // Add user page
+		r.Get("/user/create", app.createUser)   // Add pengguna page
 		r.Post("/user/create", app.createUser)
 		r.Get("/user/delete/{id}", app.deleteUser)
 
@@ -208,16 +208,16 @@ func (app *application) middleware(next http.Handler) http.Handler {
 		// Get the session
 		session, _ := app.Store.Get(r, config.SessionName)
 
-		// Check if user is authenticated
+		// Check if pengguna is authenticated
 		if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
 
-		// Ambil data user dari database beserta permissions
+		// Ambil data pengguna dari database beserta permissions
 		userData, err := app.DB.GetUserByID(session.Values["user.id"].(string))
 		if err != nil {
-			log.Error().Err(err).Msg("Failed to fetch user data")
+			log.Error().Err(err).Msg("Failed to fetch pengguna data")
 			//http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			_ = app.errorJSON(w, err)
 			return
@@ -231,7 +231,7 @@ func (app *application) middleware(next http.Handler) http.Handler {
 			return
 		}
 
-		// Cek apakah user memiliki permission untuk slug dan method
+		// Cek apakah pengguna memiliki permission untuk slug dan method
 		requestSlug := r.URL.Path
 		requestMethod := strings.ToLower(r.Method)
 
@@ -338,7 +338,7 @@ func (app *application) autoLogoutMiddleware(next http.Handler) http.Handler {
 		lastActivity, err := client.Get(context.Background(), lastActivityKey).Result()
 		if errors.Is(err, redis.Nil) || lastActivity == "" {
 			// Tidak ada aktivitas atau waktu aktivitas habis
-			log.Warn().Msgf("User %s session expired due to inactivity", userID)
+			log.Warn().Msgf("Pengguna %s session expired due to inactivity", userID)
 			app.logout(w, r)
 			return
 		} else if err != nil {

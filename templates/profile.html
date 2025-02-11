@@ -13,7 +13,7 @@
     <link rel="shortcut icon" href="/images/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
     <link rel="manifest" href="/images/site.webmanifest" />
-    <title>Edit User | {{.Data.KeyApplicationName}}</title>
+    <title>Edit Pengguna | {{.Data.KeyApplicationName}}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
           type="text/css"/>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap"
@@ -100,7 +100,7 @@
 </div>
 
 <div id="sidebar" class="ui vertical menu">
-    {{if not (eq .Data.KeySessionAdminRole "Admin")}}
+    {{if ne .Data.KeySessionAdminRole "Admin User"}}
     <a class="item active" href="/dashboard">
         <i class="dashboard icon"></i>
         Dashboard
@@ -110,13 +110,13 @@
         Daftar Permohonan
     </a>
     {{end}}
-    {{if not (eq .Data.KeySessionAdminRole "Petugas Loket")}}
+    {{if ne .Data.KeySessionAdminRole "Admin"}}
     <a class="item" href="/user">
         <i class="users card icon"></i>
-        Daftar Petugas
+        Daftar Pengguna
     </a>
     {{end}}
-    {{if and (not (eq .Data.KeySessionAdminRole "Admin")) (not (eq .Data.KeySessionAdminRole "Petugas Loket"))}}
+    {{if ne .Data.KeySessionAdminRole "Admin User"}}
     <a class="item" href="/monitoring-dan-pelaporan">
         <i class="file alternate icon"></i>
         Monitoring dan Pelaporan
@@ -178,10 +178,16 @@
                 </div>
             </div>
 
+            <div class="two fields">
             <div class="field">
                 <label>Jabatan</label>
                 <input type="text" name="jabatan" value="{{.Data.KeyUser.jabatan}}">
             </div>
+                <div class="field">
+                <label>Role</label>
+                <span class="ui large teal tag label">{{.Data.KeyUser.role}}</span>
+            </div>
+                </div>
 
             <h3 class="ui dividing header">Hak Akses</h3>
             <div class="field wrap-content">
@@ -203,6 +209,7 @@
                 <div class="field">
                     <label>Password</label>
                     <input type="password" name="password" placeholder="Masukkan password">
+                    <small class="ui red small label">Biarkan kosong jika Anda tidak ingin mengganti password. Password harus minimal 7 karakter, harus mengandung huruf, angka, dan karakter spesial. Password berlaku untuk aplikasi Monitor Loket dan Satria.</small>
                 </div>
                 <div class="field">
                     <label>Konfirmasi Password</label>

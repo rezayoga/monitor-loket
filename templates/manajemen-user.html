@@ -13,7 +13,7 @@
     <link rel="shortcut icon" href="/images/favicon.ico"/>
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png"/>
     <link rel="manifest" href="/images/site.webmanifest"/>
-    <title>Daftar User - {{.Data.KeyApplicationName}}</title>
+    <title>Daftar Pengguna - {{.Data.KeyApplicationName}}</title>
     <link
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
@@ -147,7 +147,7 @@
 </div>
 
 <div id="sidebar" class="ui vertical menu">
-    {{if not (eq .Data.KeySessionAdminRole "Admin")}}
+    {{if ne .Data.KeySessionAdminRole "Admin User"}}
     <a class="item" href="/dashboard">
         <i class="dashboard icon"></i>
         Dashboard
@@ -157,13 +157,13 @@
         Daftar Permohonan
     </a>
     {{end}}
-    {{if not (eq .Data.KeySessionAdminRole "Petugas Loket")}}
+    {{if ne .Data.KeySessionAdminRole "Admin"}}
     <a class="item active" href="/user">
         <i class="users card icon"></i>
-        Daftar Petugas
+        Daftar Pengguna
     </a>
     {{end}}
-    {{if and (not (eq .Data.KeySessionAdminRole "Admin")) (not (eq .Data.KeySessionAdminRole "Petugas Loket"))}}
+    {{if ne .Data.KeySessionAdminRole "Admin User"}}
     <a class="item" href="/monitoring-dan-pelaporan">
         <i class="file alternate icon"></i>
         Monitoring dan Pelaporan
@@ -184,19 +184,19 @@
             <i class="arrow left icon"></i> Dashboard
         </a>
         <div class="divider"> /</div>
-        <div class="active section">Daftar User</div>
+        <div class="active section">Daftar Pengguna</div>
     </div>
 
     <div class="ui padded segment">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2 class="ui header">Daftar User</h2>
+            <h2 class="ui header">Daftar Pengguna</h2>
         </div>
         {{if eq .Data.QuerySuccess "1"}}
         <div class="ui positive icon message" id="flash-message" style="text-align: left;">
             <i class="check circle icon"></i>
             <div class="content">
-                <div class="header">User berhasil disimpan!</div>
-                <p>Data user baru berhasil disimpan!</p>
+                <div class="header">Pengguna berhasil disimpan!</div>
+                <p>Data pengguna baru berhasil disimpan!</p>
             </div>
         </div>
         {{end}}
@@ -205,21 +205,21 @@
         <div class="ui positive icon message" id="flash-message" style="text-align: left;">
             <i class="trash alternate outline icon"></i>
             <div class="content">
-                <div class="header">User berhasil dihapus!</div>
-                <p>Data user berhasil dihapus!</p>
+                <div class="header">Pengguna berhasil dihapus!</div>
+                <p>Data pengguna berhasil dihapus!</p>
             </div>
         </div>
         {{end}}
 
         <div class="ui segment" style="padding: 1rem; border-radius: 10px;">
             <div class="ui stackable grid" style="align-items: center;">
-                <!-- Statistik Total User -->
+                <!-- Statistik Total Pengguna -->
                 <div class="six wide column" style="text-align: left;">
                     <div style="display: flex; align-items: center;">
                         <div style="font-size: 2.5rem; color: #0E6EB8; font-weight: bold; margin-right: 1rem;">
                             {{.Data.total_records}}
                         </div>
-                        <div style="font-size: 1.2rem; color: #555; font-weight: bold;">Total User</div>
+                        <div style="font-size: 1.2rem; color: #555; font-weight: bold;">Total Pengguna</div>
                     </div>
                     <!-- Dropdown Per Page -->
                     <div style="margin-top: 0.5rem;">
@@ -241,16 +241,16 @@
                 <div class="six wide column">
                     <div class="ui fluid icon input"
                          style="box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); border-radius: 25px;">
-                        <input type="text" id="search-input" value="{{.Data.search}}" placeholder="Cari user...">
+                        <input type="text" id="search-input" value="{{.Data.search}}" placeholder="Cari pengguna...">
                         <i class="search icon"></i>
                     </div>
                 </div>
 
-                <!-- Tombol Tambah User -->
+                <!-- Tombol Tambah Pengguna -->
                 <div class="four wide column" style="text-align: right;">
                     <button class="ui labeled icon blue button" id="add-user-button"
                             style="border-radius: 5px; padding: 0.75rem 1.5rem;">
-                        <i class="plus icon"></i> Tambah User
+                        <i class="plus icon"></i> Tambah Pengguna
                     </button>
                 </div>
             </div>
@@ -357,7 +357,7 @@
 <div id="delete-modal" class="ui small modal">
     <div class="header">Konfirmasi Penghapusan</div>
     <div class="content" style="text-align: left;">
-        <p>Apakah Anda yakin ingin menghapus user <strong id="record-name"></strong>?</p>
+        <p>Apakah Anda yakin ingin menghapus pengguna <strong id="record-name"></strong>?</p>
         <p>Data ini akan dihapus secara permanen dan tidak dapat dikembalikan.</p>
     </div>
     <div class="actions">

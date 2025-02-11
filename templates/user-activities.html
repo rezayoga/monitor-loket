@@ -105,7 +105,7 @@
 </div>
 
 <div id="sidebar" class="ui vertical menu">
-    {{if not (eq .Data.KeySessionAdminRole "Admin")}}
+    {{if ne .Data.KeySessionAdminRole "Admin User"}}
     <a class="item active" href="/dashboard">
         <i class="dashboard icon"></i>
         Dashboard
@@ -115,13 +115,13 @@
         Daftar Permohonan
     </a>
     {{end}}
-    {{if not (eq .Data.KeySessionAdminRole "Petugas Loket")}}
+    {{if ne .Data.KeySessionAdminRole "Admin"}}
     <a class="item" href="/user">
         <i class="users card icon"></i>
-        Daftar Petugas
+        Daftar Pengguna
     </a>
     {{end}}
-    {{if and (not (eq .Data.KeySessionAdminRole "Admin")) (not (eq .Data.KeySessionAdminRole "Petugas Loket"))}}
+    {{if ne .Data.KeySessionAdminRole "Admin User"}}
     <a class="item" href="/monitoring-dan-pelaporan">
         <i class="file alternate icon"></i>
         Monitoring dan Pelaporan

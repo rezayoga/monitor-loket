@@ -56,7 +56,7 @@ func (app *application) login(w http.ResponseWriter, r *http.Request) {
 	// Get the session
 	session, _ := app.Store.Get(r, config.SessionName)
 
-	// Check if user is authenticated redirect to dashboard
+	// Check if pengguna is authenticated redirect to dashboard
 	if auth, ok := session.Values["authenticated"].(bool); ok && auth {
 		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 		return
@@ -121,7 +121,7 @@ func (app *application) handleReadFile(w http.ResponseWriter, r *http.Request) {
 	// Get the session
 	session, _ := app.Store.Get(r, config.SessionName)
 
-	// Check if user is authenticated
+	// Check if pengguna is authenticated
 	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
@@ -273,10 +273,10 @@ func (app *application) loginAction(w http.ResponseWriter, r *http.Request) {
 
 	isUserActive, err := app.DB.LoginCheckUserIsActive(email)
 	if err != nil {
-		log.Debug().Msgf("Error checking user active: %v", err)
+		log.Debug().Msgf("Error checking pengguna active: %v", err)
 		_ = app.writeJSON(w, http.StatusInternalServerError, JSONResponse{
 			Error:   true,
-			Message: "Error checking user active",
+			Message: "Error checking pengguna active",
 			Data:    nil,
 		})
 		return
@@ -372,7 +372,7 @@ func (app *application) loginAction(w http.ResponseWriter, r *http.Request) {
 	activity["table_name"] = "public.users"
 	activity["record_id"] = user["id"]
 	activity["action"] = "LOGIN_SUCCESS"
-	activity["description"] = fmt.Sprintf("User %s berhasil logged in", email)
+	activity["description"] = fmt.Sprintf("Pengguna %s berhasil logged in", email)
 	activity["changes"] = map[string]interface{}{
 		"after": map[string]interface{}{
 			"username":  email,
@@ -399,10 +399,10 @@ func (app *application) loginAction(w http.ResponseWriter, r *http.Request) {
 		log.Error().Err(err).Msg("Error setting last activity in Redis")
 	}
 
-	if user["role"] == config.RoleKepalaKantor {
+	if user["role"] == config.RoleSuperadmin {
 		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 		return
-	} else if user["role"] == config.RolePetugasLoket {
+	} else if user["role"] == config.RoleAdmin {
 		http.Redirect(w, r, "/permohonan", http.StatusSeeOther)
 		return
 	} else {
@@ -415,7 +415,7 @@ func (app *application) dashboard(w http.ResponseWriter, r *http.Request) {
 	// Get the session
 	session, _ := app.Store.Get(r, config.SessionName)
 
-	// Check if user is authenticated
+	// Check if pengguna is authenticated
 	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
@@ -540,7 +540,7 @@ func (app *application) deletePermohonan(w http.ResponseWriter, r *http.Request)
 		"table_name":  "app.permohonan",
 		"record_id":   permohonanID,
 		"action":      "DELETE",
-		"description": fmt.Sprintf("Arsip dengan ID %s berhasil dihapus oleh user %s", permohonanID, session.Values["user.email"]),
+		"description": fmt.Sprintf("Arsip dengan ID %s berhasil dihapus oleh pengguna %s", permohonanID, session.Values["user.email"]),
 		"changes": map[string]interface{}{
 			"before": permohonanBefore,
 			"after":  nil, // Karena permohonan sudah dihapus
@@ -606,9 +606,9 @@ func (app *application) permohonan(w http.ResponseWriter, r *http.Request) {
 	userID := session.Values["user.id"].(string)
 
 	// Ambil data permohonan berdasarkan peran pengguna
-	if userRole == config.RoleKepalaKantor {
+	if userRole == config.RoleSuperadmin {
 		permohonan, totalRecords, err = app.DB.GetAllPermohonan(page, perPage, sort, order, search)
-	} else if userRole == config.RolePetugasLoket {
+	} else if userRole == config.RoleAdmin {
 		permohonan, totalRecords, err = app.DB.GetAllPermohonanByUserID(page, perPage, sort, order, search, userID)
 	}
 
@@ -787,7 +787,7 @@ func (app *application) createPermohonan(w http.ResponseWriter, r *http.Request)
 			"user_id":     session.Values["user.id"].(string),
 			"table_name":  "app.permohonan",
 			"action":      "CREATE",
-			"description": fmt.Sprintf("Permohonan baru ditambahkan oleh user %s", session.Values["user.email"]),
+			"description": fmt.Sprintf("Permohonan baru ditambahkan oleh pengguna %s", session.Values["user.email"]),
 			"changes": map[string]interface{}{
 				"before": nil,
 				"after":  record,
@@ -930,7 +930,7 @@ func (app *application) editPermohonan(w http.ResponseWriter, r *http.Request) {
 			"table_name":  "app.permohonan",
 			"record_id":   permohonanID,
 			"action":      "UPDATE",
-			"description": fmt.Sprintf("Permohonan %s diperbarui oleh user %s", permohonanID, session.Values["user.email"]),
+			"description": fmt.Sprintf("Permohonan %s diperbarui oleh pengguna %s", permohonanID, session.Values["user.email"]),
 			"changes": map[string]interface{}{
 				"before": before,
 				"after":  permohonanData,
@@ -1080,7 +1080,7 @@ func (app *application) logout(w http.ResponseWriter, r *http.Request) {
 			"table_name":  "public.users",
 			"record_id":   userID,
 			"action":      "LOGOUT",
-			"description": fmt.Sprintf("User %s logged out", session.Values["user.email"]),
+			"description": fmt.Sprintf("Pengguna %s logged out", session.Values["user.email"]),
 			"changes": map[string]interface{}{
 				"before": nil,
 				"after":  nil,
@@ -1141,7 +1141,7 @@ func (app *application) manajemenUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if user is authenticated
+	// Check if pengguna is authenticated
 	auth, ok := session.Values["authenticated"].(bool)
 	if !ok || !auth {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -1167,8 +1167,8 @@ func (app *application) manajemenUser(w http.ResponseWriter, r *http.Request) {
 	// Validate session values and role
 	userRole, ok := session.Values["user.role"].(string)
 	if !ok {
-		log.Debug().Msg("Invalid user role in session")
-		_ = app.errorJSON(w, fmt.Errorf("invalid user role in session"))
+		log.Debug().Msg("Invalid pengguna role in session")
+		_ = app.errorJSON(w, fmt.Errorf("invalid pengguna role in session"))
 		return
 	}
 
@@ -1179,11 +1179,11 @@ func (app *application) manajemenUser(w http.ResponseWriter, r *http.Request) {
 		err1  error
 	)
 
-	if userRole == config.RoleKepalaKantor {
-		// Get all users for "Kepala Kantor"
+	if userRole == config.RoleSuperadmin {
+		// Get all users for "Superadmin"
 		users, total, err1 = app.DB.GetAllUsers(page, perPage, sort, order, search)
 	} else {
-		// Get users excluding "Kepala Kantor"
+		// Get users excluding "Superadmin"
 		users, total, err1 = app.DB.GetAllUsersExceptKakan(page, perPage, sort, order, search)
 	}
 
@@ -1253,7 +1253,7 @@ func (app *application) manajemenUser(w http.ResponseWriter, r *http.Request) {
 			config.KeySessionAdminID:      session.Values["user.id"],
 			config.KeySessionAdminPhone:   session.Values["user.phone"],
 			config.KeySessionAdminJabatan: session.Values["user.jabatan"],
-			config.KeyListUser:            users, // List of user data
+			config.KeyListUser:            users, // List of pengguna data
 			"current_page":                page,
 			"items_per_page":              perPage,
 			"has_prev_page":               hasPrevPage,
@@ -1288,11 +1288,11 @@ func (app *application) editUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Parse user ID from URL
+	// Parse pengguna ID from URL
 	userID := chi.URLParam(r, "id")
 	if userID == "" {
-		//http.Error(w, "Invalid user ID", http.StatusBadRequest)
-		_ = app.errorJSON(w, errors.New("id user tidak valid"))
+		//http.Error(w, "Invalid pengguna ID", http.StatusBadRequest)
+		_ = app.errorJSON(w, errors.New("id pengguna tidak valid"))
 		return
 	}
 
@@ -1301,7 +1301,7 @@ func (app *application) editUser(w http.ResponseWriter, r *http.Request) {
 		// Ambil query parameter "success"
 		success := r.URL.Query().Get("success")
 
-		// GET request: Render edit user form
+		// GET request: Render edit pengguna form
 		user, err := app.DB.GetUserByID(userID)
 		if err != nil {
 			log.Debug().Msgf("Failed to fetch user: %v", err)
@@ -1344,7 +1344,7 @@ func (app *application) editUser(w http.ResponseWriter, r *http.Request) {
 				config.KeySessionAdminID:      session.Values["user.id"],
 				config.KeySessionAdminPhone:   session.Values["user.phone"],
 				config.KeySessionAdminJabatan: session.Values["user.jabatan"],
-				config.KeyUser:                user, // Pass user data to template
+				config.KeyUser:                user, // Pass pengguna data to template
 				config.KeyListPermision:       permissions,
 				"csrfField":                   csrf.TemplateField(r),
 				"QuerySuccess":                success, // Add query parameter success
@@ -1361,10 +1361,10 @@ func (app *application) editUser(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodPost {
 
-		// Ambil data user sebelumnya
+		// Ambil data pengguna sebelumnya
 		before, err := app.DB.GetUserByID(userID)
 		if err != nil || before == nil {
-			//http.Error(w, "Failed to fetch user data", http.StatusInternalServerError)
+			//http.Error(w, "Failed to fetch pengguna data", http.StatusInternalServerError)
 			_ = app.errorJSON(w, err)
 			return
 		}
@@ -1404,7 +1404,7 @@ func (app *application) editUser(w http.ResponseWriter, r *http.Request) {
 
 		//log.Debug().Msgf("User data: %+v", data)
 
-		// Update user in the database
+		// Update pengguna in the database
 		err = app.DB.UpdateUser(userID, data)
 		if err != nil {
 			log.Debug().Msgf("Failed to update user: %v", err)
@@ -1419,7 +1419,7 @@ func (app *application) editUser(w http.ResponseWriter, r *http.Request) {
 			"table_name":  "public.users",
 			"record_id":   userID,
 			"action":      "UPDATE",
-			"description": fmt.Sprintf("User %s diperbarui oleh user %s", userID, session.Values["user.email"]),
+			"description": fmt.Sprintf("Pengguna %s diperbarui oleh pengguna %s", userID, session.Values["user.email"]),
 			"changes": map[string]interface{}{
 				"before": before,
 				"after":  data,
@@ -1434,7 +1434,7 @@ func (app *application) editUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Redirect to user management page with success message
+		// Redirect to pengguna management page with success message
 		http.Redirect(w, r, fmt.Sprintf("/user/edit/%s?success=1", userID), http.StatusSeeOther)
 		return
 	}
@@ -1547,7 +1547,7 @@ func (app *application) createUser(w http.ResponseWriter, r *http.Request) {
 			"nip":     r.FormValue("nip"),
 			"jabatan": r.FormValue("jabatan"),
 			//"role":        r.FormValue("role"),
-			"role":        config.RolePetugasLoket,
+			"role":        config.RoleAdmin,
 			"password":    password, // Add hashed password
 			"is_active":   isActive,
 			"permissions": permissions,
@@ -1555,7 +1555,7 @@ func (app *application) createUser(w http.ResponseWriter, r *http.Request) {
 
 		//log.Debug().Msgf("User data: %+v", data)
 
-		// Insert user into the database
+		// Insert pengguna into the database
 		err = app.DB.CreateUser(data)
 		if err != nil {
 			log.Debug().Msgf("Failed to create user: %v", err)
@@ -1570,7 +1570,7 @@ func (app *application) createUser(w http.ResponseWriter, r *http.Request) {
 			"table_name":  "public.users",
 			"record_id":   nil,
 			"action":      "CREATE",
-			"description": fmt.Sprintf("User %s dibuat oleh user %s", data["email"], session.Values["user.email"]),
+			"description": fmt.Sprintf("Pengguna %s dibuat oleh pengguna %s", data["email"], session.Values["user.email"]),
 			"changes": map[string]interface{}{
 				"before": nil,
 				"after":  data,
@@ -1585,7 +1585,7 @@ func (app *application) createUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Redirect to user management page
+		// Redirect to pengguna management page
 		http.Redirect(w, r, "/user?success=1", http.StatusSeeOther)
 		return
 	}
@@ -1611,19 +1611,19 @@ func (app *application) deleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Ambil ID user dari URL
+	// Ambil ID pengguna dari URL
 	userID := chi.URLParam(r, "id")
 	if userID == "" {
 		//http.Error(w, "User ID is required", http.StatusBadRequest)
-		_ = app.errorJSON(w, errors.New("id user diperlukan"))
+		_ = app.errorJSON(w, errors.New("id pengguna diperlukan"))
 		return
 	}
 
-	// Ambil data user sebelum penghapusan untuk log aktivitas
+	// Ambil data pengguna sebelum penghapusan untuk log aktivitas
 	userBefore, err := app.DB.GetUserByID(userID)
 	if err != nil {
-		log.Err(err).Msg("Failed to fetch user data for logging")
-		//http.Error(w, "Failed to fetch user data", http.StatusInternalServerError)
+		log.Err(err).Msg("Failed to fetch pengguna data for logging")
+		//http.Error(w, "Failed to fetch pengguna data", http.StatusInternalServerError)
 		_ = app.errorJSON(w, err)
 		return
 	}
@@ -1650,10 +1650,10 @@ func (app *application) deleteUser(w http.ResponseWriter, r *http.Request) {
 		"table_name":  "public.users",
 		"record_id":   userID,
 		"action":      "DELETE",
-		"description": fmt.Sprintf("User dengan ID %s berhasil dihapus oleh user %s", userID, session.Values["user.email"]),
+		"description": fmt.Sprintf("Pengguna dengan ID %s berhasil dihapus oleh pengguna %s", userID, session.Values["user.email"]),
 		"changes": map[string]interface{}{
 			"before": userBefore,
-			"after":  nil, // Karena user sudah dihapus
+			"after":  nil, // Karena pengguna sudah dihapus
 		},
 	}
 
@@ -1665,7 +1665,7 @@ func (app *application) deleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Redirect ke halaman manajemen user dengan notifikasi sukses
+	// Redirect ke halaman manajemen pengguna dengan notifikasi sukses
 	http.Redirect(w, r, "/user?delete=1", http.StatusSeeOther)
 }
 
@@ -1677,7 +1677,7 @@ func (app *application) editProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Ambil user ID dari session
+	// Ambil pengguna ID dari session
 	userID, ok := session.Values["user.id"].(string)
 	if !ok || userID == "" {
 		http.Error(w, "User not authenticated", http.StatusUnauthorized)
@@ -1697,7 +1697,7 @@ func (app *application) editProfile(w http.ResponseWriter, r *http.Request) {
 		// Ambil hak akses pengguna
 		permissions, err := app.DB.GetUserPermissions(userID)
 		if err != nil {
-			log.Debug().Msgf("Failed to fetch user permissions: %v", err)
+			log.Debug().Msgf("Failed to fetch pengguna permissions: %v", err)
 			http.Error(w, "Failed to fetch permissions", http.StatusInternalServerError)
 			return
 		}
@@ -1726,7 +1726,7 @@ func (app *application) editProfile(w http.ResponseWriter, r *http.Request) {
 				config.KeySessionAdminID:      session.Values["user.id"],
 				config.KeySessionAdminPhone:   session.Values["user.phone"],
 				config.KeySessionAdminJabatan: session.Values["user.jabatan"],
-				config.KeyUser:                user, // Pass user data to template
+				config.KeyUser:                user, // Pass pengguna data to template
 				"csrfField":                   csrf.TemplateField(r),
 				"QuerySuccess":                success, // Add query parameter success
 			},
@@ -1792,7 +1792,7 @@ func (app *application) editProfile(w http.ResponseWriter, r *http.Request) {
 			"password": password, // Kosong jika tidak diperbarui
 		}
 
-		// Update user di database
+		// Update pengguna di database
 		err := app.DB.UpdateUserProfile(userID, data)
 		if err != nil {
 			log.Debug().Msgf("Failed to update profile: %v", err)
@@ -1827,7 +1827,7 @@ func (app *application) monitoringPelaporan(w http.ResponseWriter, r *http.Reque
 	// Get the session
 	session, _ := app.Store.Get(r, config.SessionName)
 
-	// Check if user is authenticated
+	// Check if pengguna is authenticated
 	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
@@ -1885,7 +1885,7 @@ func (app *application) downloadMonitoringPelaporan(w http.ResponseWriter, r *ht
 	// Get the session
 	session, _ := app.Store.Get(r, config.SessionName)
 
-	// Check if user is authenticated
+	// Check if pengguna is authenticated
 	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
@@ -2061,7 +2061,7 @@ func (app *application) userActivities(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Ambil user ID dari session
+	// Ambil pengguna ID dari session
 	userID, ok := session.Values["user.id"].(string)
 	if !ok || userID == "" {
 		http.Error(w, "User not authenticated", http.StatusUnauthorized)
@@ -2202,7 +2202,7 @@ func (app *application) getOnlineUsers(w http.ResponseWriter, r *http.Request) {
 	var onlineUsers []map[string]interface{}
 
 	for _, key := range keys {
-		// Parse user ID from Redis key
+		// Parse pengguna ID from Redis key
 		parts := strings.Split(key, ":")
 		if len(parts) < 3 {
 			continue
@@ -2222,16 +2222,16 @@ func (app *application) getOnlineUsers(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		// Check if user is within activity threshold
+		// Check if pengguna is within activity threshold
 		if now-lastActivity <= int64(threshold) {
-			// Fetch user details from the database
+			// Fetch pengguna details from the database
 			userDetails, err := app.DB.GetUserByID(userID)
 			if err != nil {
-				log.Warn().Err(err).Msgf("Failed to fetch user details for user ID %s", userID)
+				log.Warn().Err(err).Msgf("Failed to fetch pengguna details for pengguna ID %s", userID)
 				continue
 			}
 
-			// Add user details to the online users list
+			// Add pengguna details to the online users list
 			onlineUsers = append(onlineUsers, map[string]interface{}{
 				"user_id":       userID,
 				"email":         userDetails["email"],

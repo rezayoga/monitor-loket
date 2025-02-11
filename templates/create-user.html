@@ -13,7 +13,7 @@
     <link rel="shortcut icon" href="/images/favicon.ico"/>
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png"/>
     <link rel="manifest" href="/images/site.webmanifest"/>
-    <title>Tambah User | {{.Data.KeyApplicationName}}</title>
+    <title>Tambah Pengguna | {{.Data.KeyApplicationName}}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
           type="text/css"/>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap"
@@ -85,7 +85,7 @@
 </div>
 
 <div id="sidebar" class="ui vertical menu">
-    {{if not (eq .Data.KeySessionAdminRole "Admin")}}
+    {{if ne .Data.KeySessionAdminRole "Admin User"}}
     <a class="item" href="/dashboard">
         <i class="dashboard icon"></i>
         Dashboard
@@ -95,13 +95,13 @@
         Daftar Permohonan
     </a>
     {{end}}
-    {{if not (eq .Data.KeySessionAdminRole "Petugas Loket")}}
+    {{if ne .Data.KeySessionAdminRole "Admin"}}
     <a class="item active" href="/user">
         <i class="users card icon"></i>
-        Daftar Petugas
+        Daftar Pengguna
     </a>
     {{end}}
-    {{if and (not (eq .Data.KeySessionAdminRole "Admin")) (not (eq .Data.KeySessionAdminRole "Petugas Loket"))}}
+    {{if ne .Data.KeySessionAdminRole "Admin User"}}
     <a class="item" href="/monitoring-dan-pelaporan">
         <i class="file alternate icon"></i>
         Monitoring dan Pelaporan
@@ -123,13 +123,13 @@
             <i class="arrow left icon"></i> Dashboard
         </a>
         <div class="divider"> /</div>
-        <a class="section" href="/user">Daftar User</a>
+        <a class="section" href="/user">Daftar Pengguna</a>
         <div class="divider"> /</div>
-        <div class="active section">Tambah User</div>
+        <div class="active section">Tambah Pengguna</div>
     </div>
 
     <div class="ui padded segment" style="padding-bottom:50px;">
-        <h2 class="ui header">Tambah User</h2>
+        <h2 class="ui header">Tambah Pengguna</h2>
         {{if eq .Data.QuerySuccess "1"}}
         <div class="ui positive message" id="flash-message">
             <i class="close icon"></i>
@@ -184,13 +184,13 @@
             <div class="field">
                 <div class="ui toggle checkbox">
                     <input type="checkbox" name="is_active" value="true" checked>
-                    <label>Aktifkan User</label>
+                    <label>Aktifkan Pengguna</label>
                 </div>
             </div>
 
             <div class="ui divider"></div>
             <button class="ui left floated primary small labeled icon button" type="submit">
-                <i class="save icon"></i> Tambah User
+                <i class="save icon"></i> Tambah Pengguna
             </button>
             <a class="ui left floated labeled small icon button" href="/user">
                 <i class="arrow left icon"></i> Kembali

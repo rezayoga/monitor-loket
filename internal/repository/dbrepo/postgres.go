@@ -105,10 +105,10 @@ func (m *PostgresDBRepo) LoginCheckUserIsActive(email string) (bool, error) {
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			log.Debug().Msgf("No user found with email: %s", email)
-			return false, nil // Tidak aktif karena user tidak ditemukan
+			log.Debug().Msgf("No pengguna found with email: %s", email)
+			return false, nil // Tidak aktif karena pengguna tidak ditemukan
 		}
-		log.Debug().Msgf("Error checking user active: %v", err)
+		log.Debug().Msgf("Error checking pengguna active: %v", err)
 		return false, err // Kesalahan lain dilaporkan
 	}
 
@@ -773,7 +773,7 @@ func (m *PostgresDBRepo) GetAllUsers(page, perPage int, sort, order, search stri
 			return nil, 0, err
 		}
 
-		// Add values to the user map
+		// Add values to the pengguna map
 		users = append(users, map[string]interface{}{
 			"id":          id,
 			"phone":       phone,
@@ -830,7 +830,7 @@ func (m *PostgresDBRepo) GetAllUsersExceptKakan(page, perPage int, sort, order, 
 	offset := (page - 1) * perPage
 
 	// Query to fetch total count
-	countQuery := fmt.Sprintf(`SELECT COUNT(u.id) FROM public.users u WHERE u.email != '%s' AND role != '%s' %s`, systemMail, config.RoleKepalaKantor, searchCondition)
+	countQuery := fmt.Sprintf(`SELECT COUNT(u.id) FROM public.users u WHERE u.email != '%s' AND role != '%s' %s`, systemMail, config.RoleSuperadmin, searchCondition)
 
 	var totalCount int
 	err := m.DB.QueryRowContext(ctx, countQuery).Scan(&totalCount)
@@ -867,7 +867,7 @@ func (m *PostgresDBRepo) GetAllUsersExceptKakan(page, perPage int, sort, order, 
 		) p ON u.id = p.user_id
 		WHERE u.email != '%s' AND role != '%s' %s
 		ORDER BY %s %s 
-		LIMIT %d OFFSET %d`, systemMail, config.RoleKepalaKantor, searchCondition, sort, order, limit, offset)
+		LIMIT %d OFFSET %d`, systemMail, config.RoleSuperadmin, searchCondition, sort, order, limit, offset)
 
 	//log.Debug().Msgf("Query: %s", query)
 
@@ -898,7 +898,7 @@ func (m *PostgresDBRepo) GetAllUsersExceptKakan(page, perPage int, sort, order, 
 			return nil, 0, err
 		}
 
-		// Add values to the user map
+		// Add values to the pengguna map
 		users = append(users, map[string]interface{}{
 			"id":          id,
 			"phone":       phone,
@@ -975,7 +975,7 @@ func (m *PostgresDBRepo) GetUserByID(id string) (map[string]interface{}, error) 
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("user with id %s not found", id)
 		}
-		log.Debug().Msgf("Error fetching user by ID: %v", err)
+		log.Debug().Msgf("Error fetching pengguna by ID: %v", err)
 		return nil, err
 	}
 
@@ -1072,8 +1072,8 @@ func (m *PostgresDBRepo) UpdateUser(id string, data map[string]interface{}) erro
 	//// Update permissions if valid
 	//err = m.updateUserPermissions(ctx, id, permissions)
 	//if err != nil {
-	//	log.Error().Err(err).Msg("Failed to update user permissions")
-	//	return fmt.Errorf("failed to update user permissions: %w", err)
+	//	log.Error().Err(err).Msg("Failed to update pengguna permissions")
+	//	return fmt.Errorf("failed to update pengguna permissions: %w", err)
 	//}
 	//
 	//// Tangani password jika diisi
@@ -1096,7 +1096,7 @@ func (m *PostgresDBRepo) updateUserPermissions(ctx context.Context, userID strin
 	// Memulai transaksi
 	tx, err := m.DB.BeginTx(ctx, nil)
 	if err != nil {
-		log.Error().Err(err).Msg("Failed to begin transaction for user permissions update")
+		log.Error().Err(err).Msg("Failed to begin transaction for pengguna permissions update")
 		return err
 	}
 
@@ -1112,7 +1112,7 @@ func (m *PostgresDBRepo) updateUserPermissions(ctx context.Context, userID strin
 	_, err = tx.ExecContext(ctx, `DELETE FROM public.user_permissions WHERE user_id = $1`, userID)
 	if err != nil {
 		tx.Rollback()
-		log.Error().Err(err).Msg("Failed to delete user permissions")
+		log.Error().Err(err).Msg("Failed to delete pengguna permissions")
 		return err
 	}
 
@@ -1132,7 +1132,7 @@ func (m *PostgresDBRepo) updateUserPermissions(ctx context.Context, userID strin
 	// Commit transaksi
 	err = tx.Commit()
 	if err != nil {
-		log.Error().Err(err).Msg("Failed to commit transaction for user permissions update")
+		log.Error().Err(err).Msg("Failed to commit transaction for pengguna permissions update")
 		return err
 	}
 
@@ -1305,25 +1305,25 @@ func (m *PostgresDBRepo) HardDeleteUser(userID string) error {
 		}
 	}()
 
-	// Hapus data permissions terkait user dari tabel user_permissions
+	// Hapus data permissions terkait pengguna dari tabel user_permissions
 	_, err = tx.ExecContext(ctx, `DELETE FROM public.user_permissions WHERE user_id = $1`, userID)
 	if err != nil {
 		tx.Rollback()
-		log.Err(err).Msgf("Failed to delete permissions for user ID: %s", userID)
+		log.Err(err).Msgf("Failed to delete permissions for pengguna ID: %s", userID)
 		return err
 	}
 
-	// Hapus user dari tabel users
+	// Hapus pengguna dari tabel users
 	_, err = tx.ExecContext(ctx, `DELETE FROM public.users WHERE id = $1`, userID)
 	if err != nil {
 		tx.Rollback()
-		log.Err(err).Msgf("Failed to delete user ID: %s", userID)
+		log.Err(err).Msgf("Failed to delete pengguna ID: %s", userID)
 		return err
 	}
 
 	// Commit transaksi
 	if err = tx.Commit(); err != nil {
-		log.Err(err).Msg("Failed to commit transaction for user delete")
+		log.Err(err).Msg("Failed to commit transaction for pengguna delete")
 		return err
 	}
 

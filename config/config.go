@@ -60,7 +60,6 @@ const (
 	SystemUserID           = "8d0a591c-be6d-4afa-9e7d-445bb3a0cce6"
 
 	FilePanduanAplikasi = "panduan-monitor-loket-v.1.0.0.pdf"
-	RoleKepalaKantor    = "Kepala Kantor"
-	RolePetugasLoket    = "Petugas Loket"
+	RoleSuperadmin      = "Superadmin"
 	RoleAdmin           = "Admin"
 )
